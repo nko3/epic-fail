@@ -1,7 +1,9 @@
-var http = require('http');
-http.createServer(function (req, res) {
-  res.writeHead(200, {'Content-Type': 'text/plain'});
-  res.end('Hello World\n');
-}).listen(8000);
+var static = require( 'node-static' );
 
-console.log('Server running at http://0.0.0.0:8000/');
+var file = new static.Server( './static' );
+
+require( 'http' ).createServer( function( request, response ) {
+	request.addListener( 'end', function() {
+		file.serve( request, response );
+	} );
+} ).listen( 8080 );
