@@ -1,7 +1,7 @@
 (function() {
 	'use strict';
 
-	var UPDATE_INTERVAL = 5000;
+	var UPDATE_INTERVAL = 2000;
 
 	CKEDITOR.plugins.add( 'epicfail', {
 		init: function( editor ) {
@@ -26,9 +26,11 @@
 				});
 
 				socket.on( 'update', function( data ) {
-					editable.setHtml( writeFragment( data.content ) );
+					if ( data.master ) {
+						editable.setHtml( writeFragment( data.content ) );
+					}
 
-					editor.plugins.caretlocator.updateClientCaret( 'tmp', data.selection );
+					editor.plugins.caretlocator.updateClientCaret( data.clientId, editor, data.selection );
 				});
 
 				setInterval( function() {

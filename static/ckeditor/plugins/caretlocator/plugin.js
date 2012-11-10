@@ -76,7 +76,7 @@
 			return caretMark.getDocumentPosition();
 		},
 
-		updateClientCaret: function( clientName, bookmarks ) {
+		updateClientCaret: function( clientName, editor, bookmarks ) {
 
 		}
 	});

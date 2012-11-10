@@ -48,8 +48,9 @@ exports.add = function add( socket ) {
 	});
 
 	socket.on( 'update', function( data ) {
-		// For now forward only master's changes.
-		if ( client.master )
-			socket.broadcast.to( client.docId ).emit( 'update', data );
+		data.clientId = clientId;
+		data.master = client.master;
+
+		socket.broadcast.to( client.docId ).emit( 'update', data );
 	});
 };
