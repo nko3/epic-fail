@@ -17,6 +17,9 @@ console.log( '[EPIC] Static server running at :8080.' );
 
 var io = socketIO.listen( server );
 
+// Switch off debug messages.
+io.set( 'log level', 1 );
+
 io.sockets.on( 'connection', function( socket ) {
 	epicFail.add( socket );
 });

@@ -1,20 +1,36 @@
 (function() {
 	'use strict';
 
+	var UPDATE_INTERVAL = 100;
+
 	CKEDITOR.plugins.add( 'epicfail', {
 		init: function( editor ) {
 			editor.on( 'contentDom', function() {
 				var editable = editor.editable(),
 					docId = window.location.search.slice( 1 ),
-					socket = io.connect();
+					socket = io.connect(),
+					master;
 
 				socket.on( 'connect', function() {
 					socket.emit( 'init', { docId: docId, content: parseNode( editable ) } );
 				});
 
 				socket.on( 'init', function( data ) {
+					if ( data.content ) {
+						editable.setHtml( writeNode( data.content ) );
+					}
+					master = data.master;
+				});
+
+				socket.on( 'update', function( data ) {
 					editable.setHtml( writeNode( data.content ) );
 				});
+
+				setInterval( function() {
+					if ( master ) {
+						socket.emit( 'update', { docId: docId, content: parseNode( editable ) } );
+					}
+				}, UPDATE_INTERVAL );
 			});
 		}
 	});

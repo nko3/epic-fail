@@ -17,12 +17,15 @@ exports.add = function add( socket ) {
 
 		if ( !doc ) {
 			_docs[ docId ] = doc = { id: docId, clients: [], content: data.content };
+			socket.emit( 'init', { master: true } );
 		}
 		else {
-			socket.emit( 'init', { content: doc.content } );
+			socket.emit( 'init', { content: doc.content, master: false } );
 		}
 		doc.clients.push( client );
 		client.doc = doc;
+
+		socket.join( docId );
 
 		console.log( '[EPIC] Client (' + clientId + ') conntected to edit doc:' + docId );
 		console.log( '[EPIC] Number of clients editing doc:' + docId + ': ' + doc.clients.length );
@@ -39,5 +42,9 @@ exports.add = function add( socket ) {
 		}
 		console.log( '[EPIC] Client (' + clientId + ') disconntected from doc:' + client.docId );
 		console.log( '[EPIC] Number of clients editing doc:' + client.docId + ': ' + docClients.length );
+	});
+
+	socket.on( 'update', function( data ) {
+		socket.broadcast.to( client.docId ).emit( 'update', data );
 	});
 };
