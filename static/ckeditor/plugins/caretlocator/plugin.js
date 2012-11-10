@@ -74,6 +74,10 @@
 
 			// Where's the dummy caretMark?
 			return caretMark.getDocumentPosition();
+		},
+
+		updateClientCaret: function( clientName, bookmarks ) {
+
 		}
 	});
 
