@@ -13,6 +13,9 @@
 	Domit.diff = function( old, neew ) {
 		var diff = [];
 
+		old = JSON.parse( JSON.stringify( old ) );
+		neew = JSON.parse( JSON.stringify( neew ) );
+
 		diffNodesArrs( diff, [], old, neew, 0, 0 );
 
 		return diff;
@@ -31,8 +34,8 @@
 			!b.matched && diff.push( {
 				ins: 1,
 				addr: addr.concat( bi ),
-				prev: brr[ bi - 1 ] || null,
-				next: brr[ bi + 1 ] || null,
+				prev: shallowClone( brr[ bi - 1 ] ),
+				next: shallowClone( brr[ bi + 1 ] ),
 				node: b
 			});
 			// Iterate.
@@ -43,8 +46,8 @@
 			diff.push( {
 				del: 1,
 				addr: addr.concat( ai ),
-				prev: arr[ ai - 1 ] || null,
-				next: arr[ ai + 1 ] || null,
+				prev: shallowClone( arr[ ai - 1 ] ),
+				next: shallowClone( arr[ ai + 1 ] ),
 				node: a
 			});
 			// Get back after a lookup in brr.
@@ -103,6 +106,25 @@
 			}
 		}
 		return true;
+	}
+
+	function shallowClone( node ) {
+		if ( !node )
+			return null;
+
+		if ( node.type == NODE_TXT ) {
+			return {
+				type: NODE_TXT,
+				text: node.text
+			};
+		}
+		else {
+			return {
+				type: NODE_EL,
+				name: node.name,
+				attributes: JSON.parse( JSON.stringify( node.attributes ) )
+			};
+		}
 	}
 
 	// Exports Domit depending on environment.

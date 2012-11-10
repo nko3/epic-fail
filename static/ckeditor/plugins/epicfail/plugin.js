@@ -34,6 +34,8 @@
 				});
 
 				setInterval( function() {
+					console.log( JSON.stringify( parseChildren( editable ) ) );
+					console.log( editable.getHtml() );
 					socket.emit( 'update', {
 						docId: docId,
 						content: parseChildren( editable ),
@@ -70,6 +72,12 @@
 
 		for ( var i = 0, l = attributes.length; i < l; ++i ) {
 			attributesObj[ attributes[ i ].nodeName ] = attributes[ i ].nodeValue;
+		}
+
+		if ( !attributesObj[ '_sid' ] ) {
+			var val = randomHash( 4 );
+			attributesObj[ '_sid' ] = val;
+			element.setAttribute( '_sid', val );
 		}
 
 		obj.children = parseChildren( element );
@@ -121,6 +129,10 @@
 		html += writeFragment( element.children );
 
 		return html + '</' + element.name + '>';
+	}
+
+	function randomHash( len ) {
+		return parseInt( ( Math.random() + '' ).slice( 2 ), 10 ).toString( 30 ).slice( 0, len );
 	}
 
 })();

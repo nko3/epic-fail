@@ -10,7 +10,10 @@ var dom1 = [ { type: 3, text: 'A' } ],
 	dom5 = [ { type: 1, name: 'a', attributes: {}, children: [] } ],
 	dom6 = [ { type: 1, name: 'b', attributes: {}, children: [] } ],
 	dom7 = [ { type: 1, name: 'a', attributes: { href: 'x' }, children: [] } ],
-	dom8 = [ { type: 1, name: 'a', attributes: {}, children: [ dom1[ 0 ] ] } ];
+	dom8 = [ { type: 1, name: 'a', attributes: {}, children: [ dom1[ 0 ] ] } ],
+
+	domFull1 = JSON.parse( '[{"type":1,"name":"h2","children":[{"type":3,"text":"Fusce vitae porttitor"}],"attributes":{}},{"type":1,"name":"p","children":[{"type":3,"text":"Kopytko. "},{"type":1,"name":"strong","children":[{"type":3,"text":"Kaszalot w konserwie."}],"attributes":{"title":"abc"}}],"attributes":{}}]' ),
+	domFull2 = JSON.parse( '[{"type":1,"name":"h2","children":[{"type":3,"text":"Fusce vitae porttitor"}],"attributes":{}},{"type":1,"name":"p","children":[{"type":3,"text":"Kopytko. "},{"type":1,"name":"strong","children":[{"type":3,"text":"Kasz"}],"attributes":{"title":"abc"}}],"attributes":{}},{"type":1,"name":"p","children":[{"type":1,"name":"strong","children":[{"type":3,"text":"alot w konserwie."}],"attributes":{"title":"abc"}}],"attributes":{}}]' );
 
 describe( 'Domit', function() {
 	describe( 'constructor', function() {
@@ -231,6 +234,47 @@ describe( 'Domit', function() {
 					prev: null,
 					next: null,
 					node: dom1[ 0 ]
+				}
+			] );
+		});
+
+		it( 'returns correct diff for complex case', function() {
+			assert.deepEqual( Domit.diff( domFull1, domFull2 ), [
+				{
+					del: 1,
+					addr: [ 1, 1, 0 ],
+					prev: null,
+					next: null,
+					node: { type: 3, text: 'Kaszalot w konserwie.' }
+				},
+				{
+					ins: 1,
+					addr: [ 1, 1, 0 ],
+					prev: null,
+					next: null,
+					node: { type: 3, text: 'Kasz' }
+				},
+				{
+					ins: 1,
+					addr: [ 2 ],
+					prev: { type: 1, name: 'p', attributes: {} },
+					next: null,
+					node: {
+						type: 1,
+						name: 'p',
+						children:[ {
+							type: 1,
+							name: 'strong',
+							children: [
+								{
+									type: 3,
+									text: 'alot w konserwie.'
+								}
+							],
+							attributes: { title: 'abc' }
+						} ],
+						attributes: {}
+					}
 				}
 			] );
 		});
