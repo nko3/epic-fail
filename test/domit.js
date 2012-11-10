@@ -20,19 +20,19 @@ describe( 'Domit', function() {
 
 		it( 'accepts initial content', function() {
 			var obj = {};
-			var domit = new Domit( {} );
+			var domit = new Domit( obj );
 
 			assert.strictEqual( domit.head, obj );
 		});
 	});
 
 	describe( '#diff', function() {
-		it( 'returns null for identical 1', function() {
-			assert.strictEqual( Domit.diff( dom1, dom1 ), null );
+		it( 'returns empty for identical 1', function() {
+			assert.deepEqual( Domit.diff( dom1, dom1 ), [] );
 		});
 
-		it( 'returns null for identical 2', function() {
-			assert.strictEqual( Domit.diff( dom5, dom5 ), null );
+		it( 'returns empty for identical 2', function() {
+			assert.deepEqual( Domit.diff( dom5, dom5 ), [] );
 		});
 
 		it( 'returns delete,insert for entirely different 1', function() {
