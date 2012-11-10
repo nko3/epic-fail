@@ -13,11 +13,11 @@
 				});
 
 				socket.on( 'init', function( data ) {
-					console.log( data );
+					editable.setHtml( writeNode( data.content ) );
 				});
 			});
 		}
-	} );
+	});
 
 	function parseNode( node ) {
 		switch ( node.type ) {
@@ -58,6 +58,36 @@
 		obj.attributes = attributesObj;
 
 		return obj;
+	}
+
+	function writeNode( node ) {
+		// Write unsupported node type.
+		if ( !node ) {
+			return '';
+		}
+
+		return ( node.type == CKEDITOR.NODE_ELEMENT ?
+			writeElement( node ) :
+			node.text
+		);
+	}
+
+	function writeElement( element ) {
+		var html = '<' + element.name;
+
+		for ( var name in element.attributes )
+			html += ' ' + name + '="' + element.attributes[ name ] + '"';
+
+		if ( CKEDITOR.dtd.$empty[ element.name ] )
+			return html + '/>';
+		else
+			html += '>';
+
+		html += element.children.map( function( node ) {
+			return writeNode( node );
+		}).join( '' );
+
+		return html + '</' + element.name + '>';
 	}
 
 })();
