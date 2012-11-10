@@ -31,18 +31,18 @@
 					top: editable.$.offsetTop + 'px',
 					width: editable.getSize( 'width', 1 ) + 'px',
 					height: editable.getSize( 'height', 1 ) + 'px',
-					color: 'white',
+					color: 'red',
 					opacity: 0
 				});
 				clone.setAttributes({
 					'id': editable.getId() + '_clone'
-					// 'contenteditable': false
 				});
 				clone.$.scrollTop = editable.$.scrollTop;
 				clone.insertBefore( editable );
 				editable._.clone = clone;
 			}, this );
 		},
+
 		locateCaret: function( editor ) {
 			var editable = editor.editable();
 			syncClone( editable );

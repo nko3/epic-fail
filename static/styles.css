@@ -1,7 +1,13 @@
 body {
-	background: #F55;
+	background: url( 'nyan.png' ) #000;
 	width: 700px;
 	padding: 50px 20px;
 	font-family: 'Trebuchet MS';
-	margin: 0 auto;
+	margin: 50px auto;
+}
+
+#editable {
+	background: rgba( 255, 255, 255, .6 );
+	padding: 20px;
+	border: 1px solid rgba( 255, 255, 255, .6 );
 }
