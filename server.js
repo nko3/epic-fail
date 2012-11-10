@@ -1,9 +1,19 @@
-var static = require( 'node-static' );
+var nodeStatic = require( 'node-static' ),
+	socketIO = require( 'socket.io' );
 
-var file = new static.Server( './static' );
+var fileServer = new nodeStatic.Server( './static' );
 
-require( 'http' ).createServer( function( request, response ) {
+var server = require( 'http' ).createServer( function( request, response ) {
 	request.addListener( 'end', function() {
-		file.serve( request, response );
+		fileServer.serve( request, response );
 	} );
-} ).listen( 8080 );
+} )
+
+server.listen( 8080 );
+console.log( 'Static server running at :8080.' );
+
+var io = socketIO.listen( server );
+
+io.sockets.on( 'connection', function( socket ) {
+	console.log( 'Socket client connected' );
+} );

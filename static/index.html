@@ -3,9 +3,18 @@
 <head>
 	<title>CKEditor Epic Fail</title>
 	<meta charset="utf-8">
-	<link rel="stylesheet" href="sample.css">
+	<link rel="stylesheet" href="styles.css">
+	<script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
-	<h1>Epic Fail</h1>
+	<h1>CKEditor Epic Fail</h1>
+	<script>
+
+var socket = io.connect();
+socket.on( 'connect', function() {
+
+} );
+
+	</script>
 </body>
 </html>
