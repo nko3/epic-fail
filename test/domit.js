@@ -93,15 +93,15 @@ describe( 'Domit', function() {
 					ins: 1,
 					addr: [ 0 ], // is at
 					prev: null,
-					next: null,
-					node: dom1[ 0 ]
+					next: { type: 3, text: 'D' },
+					node: { type: 3, text: 'C' }
 				},
 				{
 					ins: 1,
-					addr: [ 0 ], // is at
-					prev: dom1[ 0 ], // to be executed after previous
+					addr: [ 1 ], // is at
+					prev: { type: 3, text: 'C' },
 					next: null,
-					node: dom1[ 0 ]
+					node: { type: 3, text: 'D' }
 				}
 			] );
 		});

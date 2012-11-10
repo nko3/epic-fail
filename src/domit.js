@@ -18,16 +18,17 @@
 		return diff;
 	};
 
-	function diffNodesArrs( diff, addr, arr, brr, ai, bi, aLookup, bLookup ) {
+	function diffNodesArrs( diff, addr, arr, brr, ai, bi, aLookup ) {
 		var a = arr[ ai ],
 			b = brr[ bi ];
 
 		// End of array iteration.
 		if ( !a && !b )
-			return true;
+			return;
 		// New is longer - b was added.
 		if ( !a ) {
-			diff.push( {
+			// If not matched before, mark as inserted.
+			!b.matched && diff.push( {
 				ins: 1,
 				addr: addr.concat( bi ),
 				prev: brr[ bi - 1 ] || null,
@@ -46,6 +47,7 @@
 				next: arr[ ai + 1 ] || null,
 				node: a
 			});
+			// Get back after a lookup in brr.
 			if ( aLookup ) {
 				return diffNodesArrs( diff, addr, arr, brr, ai + 1, bi - aLookup );
 			}
@@ -54,6 +56,12 @@
 		}
 
 		if ( compareNodes( a, b ) ) {
+			// Get back after a lookup in brr and then continue iteration and going deeper. Because we need to go deeper.
+			if ( aLookup ) {
+				// Mark as matched, what will help us skip them after getting back after lookup.
+				a.matched = b.matched = true;
+				diffNodesArrs( diff, addr, arr, brr, ai + 1, bi - aLookup );
+			}
 			if ( a.type == NODE_EL ) {
 				// Start iterating level deeper.
 				diffNodesArrs( diff, addr.concat( ai ), a.children, b.children, 0, 0 );
@@ -63,7 +71,7 @@
 		}
 		else {
 			// Start lookup in brr for node equals to a.
-			diffNodesArrs( diff, addr, arr, brr, ai, bi + 1, 1, 0 );
+			diffNodesArrs( diff, addr, arr, brr, ai, bi + 1, ( aLookup || 0 ) + 1, 0 );
 		}
 	}
 
