@@ -7,6 +7,31 @@ body {
 }
 
 #editable {
-	background: rgba( 255, 255, 255, .2 );
+	background: rgba( 255, 255, 255, 1 );
 	border: 1px solid rgba( 255, 255, 255, .6 );
+}
+.cke_editable {
+	padding: 20px;
+}
+
+.synthCaret {
+	z-index: 1000;
+	position: absolute;
+	width: 2px;
+	display: block;
+	opacity: 1;
+}
+.synthCaretFlag {
+	display: block;
+	font-size: 10px;
+	height: 16px;
+	line-height: 16px;
+	text-overflow: ellipsis;
+  	white-space: nowrap;
+	position: absolute;
+	top: 0;
+	margin-top: -10px;
+	padding: 0 2px;
+	color: #fff;
+	left: 0;
 }

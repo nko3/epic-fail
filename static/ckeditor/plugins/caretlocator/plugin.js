@@ -43,66 +43,120 @@
 			}, this );
 		},
 
-		locateCaretByRange: function( range ) {
+		updateClientCaret: function( clientId, editor, bookmarks ) {
+			var editable = editor.editable(),
+				bookmark, range, caretPosition;
 
+			// Synchronizes editable content with clone.
+			editable._.clone.setHtml( editable.getHtml() );
+
+			if( !( bookmark = bookmarks[ 0 ] ) )
+				return clientCarets.detachCaret( clientId );
+
+			// Move bookmark address from editable to the clone by replacing
+			// some very first digits of the address.
+			Array.prototype.splice.apply(
+				bookmark.start,
+				[].concat( 0, editable.getAddress().length, editable._.clone.getAddress() ) );
+
+			range = new CKEDITOR.dom.range( editor.document );
+			range.moveToBookmark( bookmark );
+
+			// If the position exist (caret exist), move the synthetic caret.
+			// Otherwise remove it.
+			clientCarets[ ( caretPosition = locateCaretByRange( editor, range ) ) ?
+				'moveCaret'
+					:
+				'detachCaret' ]( clientId, caretPosition );
 		}
-
-		locateCaret: function( editor ) {
-			var editable = editor.editable();
-			syncClone( editable );
-
-			var range = editor.getSelection().getRanges()[ 0 ];
-
-			// No selection in editor. Create a range at the beginning of editable.
-			if ( !range ) {
-				range = new CKEDITOR.dom.range( editor.document );
-				range.setStartBefore( editable.getFirst() );
-			}
-
-				// An address of the element which is the start container for a caret.
-			var caretAddress = range.startContainer.getAddress().slice(
-					editable.getAddress().length ),
-				// An offset of the caret in start container.
-				caretOffset = range.startOffset,
-				// Dummy marker which is to determine the absolute position of the caret.
-				caretMark = CKEDITOR.dom.element.createFromHtml( '<span style="border-left:1px solid white;position:absolute;">&#8203;</span>' ),
-				// A node which is to hold caretMark in clone.
-				targetNode = editor.document.getByAddress(
-					editable._.clone.getAddress().concat( caretAddress ) );
-
-			// Insert caretMark into a clone.
-			if ( targetNode.type == CKEDITOR.NODE_ELEMENT )
-				caretMark.insertBefore( targetNode.getChildren().getItem( caretOffset ) );
-			else if ( targetNode.type == CKEDITOR.NODE_TEXT )
-				caretMark.insertBefore( targetNode.split( caretOffset ) );
-
-			// Where's the dummy caretMark?
-			return caretMark.getDocumentPosition();
-		},
-
-		updateClientCaret: function( clientName, editor, bookmarks ) {
-			function bookmarkToClone( bookmark, editable, clone ) {
-				Array.prototype.splice.apply(
-					bookmark.start,
-					[ 0, editable.getAddress().length ].concat( clone.getAddress() ) );
-			}
-
-			return function( clientName, editor, bookmarks ) {
-					var editable = editor.editable();
-					syncClone( editable );
-
-					var bookmark = bookmarks[ 0 ];
-					bookmarkToClone( bookmark, editable, editable._.clone );
-					console.log( bookmark );
-
-					var range = new CKEDITOR.dom.range( editor.document );
-					range.moveToBookmark( bookmark );
-					console.log( range );
-				}
-		})()
 	});
 
-	function syncClone( editable ) {
-		editable._.clone.setHtml( editable.getHtml() );
+	var caretTemplate = new CKEDITOR.template( '<span \
+		class="synthCaret" id="caret_{clientId}" \
+		style="background:{color};">\
+			<span class="synthCaretFlag" style="background:{color}">\
+				{clientId}\
+			</span>\
+		</span>' ),
+		caretMakTemplate = '<span style="border-left:1px solid white;position:absolute;">&#8203;</span>';
+
+	// Returns caret coordinates for a given range, which MUST belong
+	// to the editable's clone.
+	function locateCaretByRange( editor, range ) {
+		// Dummy marker which is to determine the absolute position of the caret.
+		var caretMark = CKEDITOR.dom.element.createFromHtml( caretMakTemplate );
+		range.insertNode( caretMark );
+
+		// Where's the dummy caretMark?
+		return CKEDITOR.tools.extend(
+			caretMark.getDocumentPosition(),
+			{ height: parseInt( caretMark.getComputedStyle( 'height' ), 10 ) } );
 	}
+
+	var clientCarets = (function() {
+		var colors = [ 'red', 'green', 'blue', 'magenta', 'yellow', 'orange' ],
+			carets = {};
+
+		return {
+			createCaret: function( clientId ) {
+				console.log( 'Creating caret for:' + clientId );
+
+				var clientColor = colors.shift();
+
+				carets[ clientId ] = {
+					color: clientColor
+				}
+				carets[ clientId ].element = CKEDITOR.dom.element.createFromHtml(
+					caretTemplate.output( { clientId: clientId, color: clientColor } ) );
+
+				return carets[ clientId ].element;
+			},
+			attachCaret: function( clientId ) {
+				console.log( 'Attaching caret for:' + clientId );
+
+				( carets[ clientId ] || this.createCaret( clientId ) ).appendTo( CKEDITOR.document.getBody() );
+			},
+			detachCaret: function( clientId ) {
+				if ( carets[ clientId ] ) {
+					console.log( 'Removing caret for: ' + clientId );
+					carets[ clientId ].element.remove();
+				}
+			},
+			moveCaret: function( clientId, position ) {
+				var needsUpdate = false,
+					i;
+
+				// If no caret for such client or it has been detached, attach it.
+				if ( !carets[ clientId ] || !carets[ clientId ].element.isVisible() )
+					this.attachCaret( clientId );
+
+				// If there's cached position for a caret...
+				if ( carets[ clientId ].cachedPosition ) {
+					// Find out whether position has changed.
+					for ( i in position ) {
+						if ( position[ i ] != carets[ clientId ].cachedPosition[ i ] ) {
+							needsUpdate = true;
+							break;
+						}
+					}
+				}
+				// If no caret, position is brand new.
+				else
+					needsUpdate = true;
+
+				if ( needsUpdate ) {
+					console.log( 'Moving caret for:' + clientId + ' to: ', position );
+
+					carets[ clientId ].element.setStyles({
+						left: position.x + 'px',
+						top: position.y + 'px',
+						height: position.height + 'px'
+					});
+
+					// Cache the position.
+					carets[ clientId ].cachedPosition = position;
+				}
+			}
+		}
+	})()
 })();
