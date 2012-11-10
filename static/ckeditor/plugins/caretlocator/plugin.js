@@ -32,16 +32,20 @@
 					width: editable.getSize( 'width', 1 ) + 'px',
 					height: editable.getSize( 'height', 1 ) + 'px',
 					color: 'red',
-					opacity: 0
+					opacity: 1
 				});
 				clone.setAttributes({
 					'id': editable.getId() + '_clone'
 				});
 				clone.$.scrollTop = editable.$.scrollTop;
-				clone.insertBefore( editable );
+				clone.insertBefore( editor.document.getBody().getLast() );
 				editable._.clone = clone;
 			}, this );
 		},
+
+		locateCaretByRange: function( range ) {
+
+		}
 
 		locateCaret: function( editor ) {
 			var editable = editor.editable();
@@ -77,8 +81,25 @@
 		},
 
 		updateClientCaret: function( clientName, editor, bookmarks ) {
+			function bookmarkToClone( bookmark, editable, clone ) {
+				Array.prototype.splice.apply(
+					bookmark.start,
+					[ 0, editable.getAddress().length ].concat( clone.getAddress() ) );
+			}
 
-		}
+			return function( clientName, editor, bookmarks ) {
+					var editable = editor.editable();
+					syncClone( editable );
+
+					var bookmark = bookmarks[ 0 ];
+					bookmarkToClone( bookmark, editable, editable._.clone );
+					console.log( bookmark );
+
+					var range = new CKEDITOR.dom.range( editor.document );
+					range.moveToBookmark( bookmark );
+					console.log( range );
+				}
+		})()
 	});
 
 	function syncClone( editable ) {
