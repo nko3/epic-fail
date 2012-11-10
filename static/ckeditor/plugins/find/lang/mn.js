@@ -1,0 +1,1 @@
+﻿CKEDITOR.plugins.setLang("find","mn",{find:"Хайх",findOptions:"Find Options",findWhat:"Хайх үг/үсэг:",matchCase:"Тэнцэх төлөв",matchCyclic:"Match cyclic",matchWord:"Тэнцэх бүтэн үг",notFoundMsg:"Хайсан текст олсонгүй.",replace:"Солих",replaceAll:"Бүгдийг нь Солих",replaceSuccessMsg:"%1 occurrence(s) replaced.",replaceWith:"Солих үг:",title:"Хай мөн Дарж бич"});

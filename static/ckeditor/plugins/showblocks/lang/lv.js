@@ -1,0 +1,1 @@
+﻿CKEDITOR.plugins.setLang("showblocks","lv",{toolbar:"Show Blocks"});

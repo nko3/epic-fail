@@ -1,0 +1,1 @@
+﻿CKEDITOR.plugins.setLang("templates","lv",{button:"Sagataves",emptyListMsg:"(Nav norādītas sagataves)",insertOption:"Replace actual contents",options:"Template Options",selectPromptMsg:"Lūdzu, norādiet sagatavi, ko atvērt editorā<br>(patreizējie dati tiks zaudēti):",title:"Satura sagataves"});

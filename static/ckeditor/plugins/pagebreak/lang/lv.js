@@ -1,0 +1,1 @@
+﻿CKEDITOR.plugins.setLang("pagebreak","lv",{alt:"Page Break",toolbar:"Ievietot lapas pārtraukumu"});
