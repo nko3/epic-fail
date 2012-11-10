@@ -1,7 +1,7 @@
 (function() {
 	'use strict';
 
-	var UPDATE_INTERVAL = 100;
+	var UPDATE_INTERVAL = 5000;
 
 	CKEDITOR.plugins.add( 'epicfail', {
 		init: function( editor ) {
@@ -24,12 +24,16 @@
 
 				socket.on( 'update', function( data ) {
 					editable.setHtml( writeNode( data.content ) );
+
+					editor.getSelection().selectBookmarks( data.selection );
 				});
 
 				setInterval( function() {
-					if ( master ) {
-						socket.emit( 'update', { docId: docId, content: parseNode( editable ) } );
-					}
+					socket.emit( 'update', {
+						docId: docId,
+						content: parseNode( editable ),
+						selection: editor.getSelection().createBookmarks2( true )
+					});
 				}, UPDATE_INTERVAL );
 			});
 		}

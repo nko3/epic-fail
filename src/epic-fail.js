@@ -18,13 +18,16 @@ exports.add = function add( socket ) {
 		if ( !doc ) {
 			_docs[ docId ] = doc = { id: docId, clients: [], content: data.content };
 			socket.emit( 'init', { master: true } );
+			client.master = true;
 		}
 		else {
 			socket.emit( 'init', { content: doc.content, master: false } );
+			client.master = false;
 		}
 		doc.clients.push( client );
 		client.doc = doc;
 
+		// Join doc room.
 		socket.join( docId );
 
 		console.log( '[EPIC] Client (' + clientId + ') conntected to edit doc:' + docId );
@@ -45,6 +48,8 @@ exports.add = function add( socket ) {
 	});
 
 	socket.on( 'update', function( data ) {
-		socket.broadcast.to( client.docId ).emit( 'update', data );
+		// For now forward only master's changes.
+		if ( client.master )
+			socket.broadcast.to( client.docId ).emit( 'update', data );
 	});
 };
