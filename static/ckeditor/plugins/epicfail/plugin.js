@@ -12,7 +12,10 @@
 					master;
 
 				socket.on( 'connect', function() {
-					socket.emit( 'init', { docId: docId, content: parseNode( editable ) } );
+					socket.emit( 'init', {
+						docId: docId,
+						content: parseChildren( editable )
+					});
 				});
 
 				socket.on( 'init', function( data ) {
@@ -23,7 +26,7 @@
 				});
 
 				socket.on( 'update', function( data ) {
-					editable.setHtml( writeNode( data.content ) );
+					editable.setHtml( writeFragment( data.content ) );
 
 					editor.getSelection().selectBookmarks( data.selection );
 				});
@@ -31,7 +34,7 @@
 				setInterval( function() {
 					socket.emit( 'update', {
 						docId: docId,
-						content: parseNode( editable ),
+						content: parseChildren( editable ),
 						selection: editor.getSelection().createBookmarks2( true )
 					});
 				}, UPDATE_INTERVAL );
@@ -60,13 +63,6 @@
 			name: element.getName()
 		};
 
-		var children = element.getChildren(),
-			childrenArr = [];
-
-		for ( var i = 0, l = children.count(); i < l; ++i ) {
-			childrenArr.push( parseNode( children.getItem( i ) ) );
-		}
-
 		var attributes = element.$.attributes,
 			attributesObj = {};
 
@@ -74,10 +70,27 @@
 			attributesObj[ attributes[ i ].nodeName ] = attributes[ i ].nodeValue;
 		}
 
-		obj.children = childrenArr;
+		obj.children = parseChildren( element );
 		obj.attributes = attributesObj;
 
 		return obj;
+	}
+
+	function parseChildren( element ) {
+		var children = element.getChildren(),
+			childrenArr = [];
+
+		for ( var i = 0, l = children.count(); i < l; ++i ) {
+			childrenArr.push( parseNode( children.getItem( i ) ) );
+		}
+
+		return childrenArr;
+	}
+
+	function writeFragment( fragment ) {
+		return fragment.map( function( node ) {
+			return writeNode( node );
+		}).join( '' );
 	}
 
 	function writeNode( node ) {
@@ -103,9 +116,7 @@
 		else
 			html += '>';
 
-		html += element.children.map( function( node ) {
-			return writeNode( node );
-		}).join( '' );
+		html += writeFragment( element.children );
 
 		return html + '</' + element.name + '>';
 	}
