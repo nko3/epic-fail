@@ -13,11 +13,11 @@ var server = require( 'http' ).createServer( function( request, response ) {
 })
 
 server.listen( 8080 );
-console.log( 'Static server running at :8080.' );
+console.log( '[EPIC] Static server running at :8080.' );
 
 var io = socketIO.listen( server );
 
 io.sockets.on( 'connection', function( socket ) {
 	epicFail.add( socket );
 });
-console.log( 'Sockets server running at :8080.' );
+console.log( '[EPIC] Sockets server running at :8080.' );
