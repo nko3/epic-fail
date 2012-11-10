@@ -7,7 +7,7 @@ body {
 }
 
 #editable {
-	background: rgba( 255, 255, 255, .6 );
+	background: rgba( 255, 255, 255, .9 );
 	padding: 20px;
 	border: 1px solid rgba( 255, 255, 255, .6 );
 }
