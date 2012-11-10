@@ -15,5 +15,7 @@ console.log( 'Static server running at :8080.' );
 var io = socketIO.listen( server );
 
 io.sockets.on( 'connection', function( socket ) {
-	console.log( 'Socket client connected' );
+	socket.on( 'start', function() {
+		console.log(arguments);
+	});
 } );

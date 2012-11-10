@@ -1,3 +1,7 @@
 body {
 	background: #F55;
+	width: 700px;
+	padding: 50px 20px;
+	font-family: 'Trebuchet MS';
+	margin: 0 auto;
 }

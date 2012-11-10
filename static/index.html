@@ -4,17 +4,40 @@
 	<title>CKEditor Epic Fail</title>
 	<meta charset="utf-8">
 	<link rel="stylesheet" href="styles.css">
+	<script>
+		if ( !window.location.search.slice( 0 ) )
+			window.location += '?' + ( Math.random() + '' ).slice( 2, 6 );
+	</script>
 	<script src="/socket.io/socket.io.js"></script>
+	<script src="ckeditor/ckeditor.js"></script>
 </head>
 <body>
-	<h1>CKEditor Epic Fail</h1>
-	<script>
-
-var socket = io.connect();
-socket.on( 'connect', function() {
-
-} );
-
-	</script>
+	<div id="editable" contenteditable="true">
+		<h1>CKEditor Epic Fail</h1>
+		<h2>
+			Fusce vitae porttitor
+		</h2>
+		<p>
+			<strong>
+				Lorem ipsum dolor sit amet dolor. Duis blandit vestibulum faucibus a, tortor.
+			</strong>
+		</p>
+		<p>
+			Proin nunc justo felis mollis tincidunt, risus risus pede, posuere cubilia Curae, Nullam euismod, enim. Etiam nibh ultricies dolor ac dignissim erat volutpat. Vivamus fermentum <a href="http://ckeditor.com/">nisl nulla sem in</a> metus. Maecenas wisi. Donec nec erat volutpat.
+		</p>
+		<blockquote>
+			<p>
+				Fusce vitae porttitor a, euismod convallis nisl, blandit risus tortor, pretium.
+				Vehicula vitae, imperdiet vel, ornare enim vel sodales rutrum
+			</p>
+		</blockquote>
+		<blockquote>
+			<p>
+				Libero nunc, rhoncus ante ipsum non ipsum. Nunc eleifend pede turpis id sollicitudin fringilla. Phasellus ultrices, velit ac arcu.
+			</p>
+		</blockquote>
+		<p>Pellentesque nunc. Donec suscipit erat. Pellentesque habitant morbi tristique ullamcorper.</p>
+		<p>Mauris mattis feugiat lectus nec mauris. Nullam vitae ante.</p>
+	</div>
 </body>
 </html>
