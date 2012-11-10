@@ -3,11 +3,19 @@
 var _clients = {},
 	_docs = {};
 
+var getNextId = (function() {
+	var id = 0;
+	return function() {
+		return ++id;
+	};
+})();
+
 exports.add = function add( socket ) {
 	var clientId = socket.id,
 		client = _clients[ clientId ] = {
 			docId: null,
-			doc: null
+			doc: null,
+			name: 'User' + getNextId()
 		};
 
 	socket.on( 'init', function( data ) {
@@ -17,11 +25,11 @@ exports.add = function add( socket ) {
 
 		if ( !doc ) {
 			_docs[ docId ] = doc = { id: docId, clients: [], content: data.content };
-			socket.emit( 'init', { master: true } );
+			socket.emit( 'init', { name: client.name, master: true } );
 			client.master = true;
 		}
 		else {
-			socket.emit( 'init', { content: doc.content, master: false } );
+			socket.emit( 'init', { name: client.name, content: doc.content, master: false } );
 			client.master = false;
 		}
 		doc.clients.push( client );
@@ -50,7 +58,22 @@ exports.add = function add( socket ) {
 	socket.on( 'update', function( data ) {
 		data.clientId = clientId;
 		data.master = client.master;
+		data.clientName = client.name;
 
 		socket.broadcast.to( client.docId ).emit( 'update', data );
+	});
+
+	socket.on( 'name', function( data ) {
+		if ( data.clientName == client.name )
+			return;
+
+		client.name = data.clientName;
+
+		socket.broadcast.to( client.docId ).emit( 'name', {
+			clientId: clientId,
+			clientName: client.name
+		});
+
+		console.log( '[EPIC] Client (' + clientId + ') changed name to: ' + client.name );
 	});
 };

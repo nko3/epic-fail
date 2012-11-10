@@ -1,16 +1,21 @@
-body {
-	background: url( http://upload.wikimedia.org/wikipedia/en/thumb/e/ed/Nyan_cat_250px_frame.PNG/220px-Nyan_cat_250px_frame.PNG ) #000;
-	width: 700px;
-	padding: 50px 20px;
-	font-family: 'Trebuchet MS';
-	margin: 50px auto;
+html, body {
+	padding: 0;
+	margin: 0;
 }
 
-#editable {
-	background: rgba( 255, 255, 255, 1 );
-	border: 1px solid rgba( 255, 255, 255, .6 );
+body {
+	background: #fff;
+	padding: 20px;
+	font-family: 'Trebuchet MS';
 }
+
 .cke_editable {
+	width: 660px;
+	outline: none;
+}
+
+.cke_editable,
+.clientForm {
 	padding: 20px;
 }
 
@@ -31,7 +36,20 @@ body {
 	position: absolute;
 	top: 0;
 	margin-top: -10px;
-	padding: 0 2px;
+	padding: 0 4px;
 	color: #fff;
 	left: 0;
+}
+
+.clientForm {
+	position: fixed;
+	left: 720px;
+	right: 0px;
+	top: 0px;
+	bottom: 0px;
+	border-left: 1px dashed #ccc;
+	background: #eee;
+}
+.clientForm label {
+	display: block;
 }

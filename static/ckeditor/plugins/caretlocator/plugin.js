@@ -38,19 +38,21 @@
 					'id': editable.getId() + '_clone'
 				});
 				clone.$.scrollTop = editable.$.scrollTop;
-				clone.insertBefore( editor.document.getBody().getLast() );
+				clone.appendTo( editor.document.getBody() );
 				editable._.clone = clone;
 			}, this );
 		},
 
-		updateClientCaret: function( clientId, editor, bookmarks ) {
+		updateClientCaret: function( data, editor ) {
 			var editable = editor.editable(),
-				bookmark, range, caretPosition;
+				clientId = data.clientId,
+				bookmark = data.selection[ 0 ],
+				range, caretPosition;
 
 			// Synchronizes editable content with clone.
 			editable._.clone.setHtml( editable.getHtml() );
 
-			if( !( bookmark = bookmarks[ 0 ] ) )
+			if( !bookmark )
 				return clientCarets.detachCaret( clientId );
 
 			// Move bookmark address from editable to the clone by replacing
@@ -67,15 +69,20 @@
 			clientCarets[ ( caretPosition = locateCaretByRange( editor, range ) ) ?
 				'moveCaret'
 					:
-				'detachCaret' ]( clientId, caretPosition );
+				'detachCaret' ]( data, caretPosition );
+		},
+
+		updateClientCaretName: function( data ) {
+			clientCarets.updateCaretName( data );
 		}
 	});
 
 	var caretTemplate = new CKEDITOR.template( '<span \
-		class="synthCaret" id="caret_{clientId}" \
+		class="synthCaret" \
+		id="caret_{clientId}" \
 		style="background:{color};">\
 			<span class="synthCaretFlag" style="background:{color}">\
-				{clientId}\
+				{clientName}\
 			</span>\
 		</span>' ),
 		caretMakTemplate = '<span style="border-left:1px solid white;position:absolute;">&#8203;</span>';
@@ -98,8 +105,13 @@
 			carets = {};
 
 		return {
-			createCaret: function( clientId ) {
-				console.log( 'Creating caret for:' + clientId );
+			attachCaret: function( data ) {
+				console.log( 'Attaching caret for:' + data.clientId );
+
+				( carets[ data.clientId ] || this.createCaret( data.clientId, data.clientName ) ).appendTo( CKEDITOR.document.getBody() );
+			},
+			createCaret: function( clientId, clientName ) {
+				console.log( 'Creating caret for ' + clientId + '(' + clientName + ')'  );
 
 				var clientColor = colors.shift();
 
@@ -107,28 +119,29 @@
 					color: clientColor
 				}
 				carets[ clientId ].element = CKEDITOR.dom.element.createFromHtml(
-					caretTemplate.output( { clientId: clientId, color: clientColor } ) );
+					caretTemplate.output( {
+						clientId: clientId,
+						clientName: clientName,
+						color: clientColor
+					} ) );
 
 				return carets[ clientId ].element;
 			},
-			attachCaret: function( clientId ) {
-				console.log( 'Attaching caret for:' + clientId );
-
-				( carets[ clientId ] || this.createCaret( clientId ) ).appendTo( CKEDITOR.document.getBody() );
-			},
-			detachCaret: function( clientId ) {
-				if ( carets[ clientId ] ) {
-					console.log( 'Removing caret for: ' + clientId );
-					carets[ clientId ].element.remove();
+			detachCaret: function( data ) {
+				if ( carets[ data.clientId ] ) {
+					console.log( 'Removing caret for ' + data.clientId );
+					carets[ data.clientId ].element.remove();
 				}
 			},
-			moveCaret: function( clientId, position ) {
+			moveCaret: function( data, position ) {
 				var needsUpdate = false,
+					clientId = data.clientId,
+					clientName = data.clientName,
 					i;
 
-				// If no caret for such client or it has been detached, attach it.
+				// If clientName, no caret for such client or it has been detached, attach it.
 				if ( !carets[ clientId ] || !carets[ clientId ].element.isVisible() )
-					this.attachCaret( clientId );
+					this.attachCaret( data );
 
 				// If there's cached position for a caret...
 				if ( carets[ clientId ].cachedPosition ) {
@@ -145,7 +158,7 @@
 					needsUpdate = true;
 
 				if ( needsUpdate ) {
-					console.log( 'Moving caret for:' + clientId + ' to: ', position );
+					console.log( 'Moving caret for ' + clientId + ' to: ', position );
 
 					carets[ clientId ].element.setStyles({
 						left: position.x + 'px',
@@ -155,6 +168,18 @@
 
 					// Cache the position.
 					carets[ clientId ].cachedPosition = position;
+				}
+			},
+			updateCaretName: function( data ) {
+				var clientId = data.clientId,
+					clientName = data.clientName;
+
+				if ( carets[ clientId ] ) {
+					console.log( 'Updating caret name for ' + clientId + ': ' + clientName );
+
+					carets[ clientId ].element.getFirst( function( node ) {
+						return node.type == CKEDITOR.NODE_ELEMENT;
+					}).setText( clientName );
 				}
 			}
 		}

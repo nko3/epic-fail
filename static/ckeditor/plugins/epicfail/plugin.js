@@ -1,7 +1,7 @@
 (function() {
 	'use strict';
 
-	var UPDATE_INTERVAL = 2000;
+	var UPDATE_INTERVAL = 100;
 
 	CKEDITOR.plugins.add( 'epicfail', {
 		init: function( editor ) {
@@ -23,6 +23,7 @@
 						editable.setHtml( writeFragment( data.content ) );
 					}
 					master = data.master;
+					insertClientForm( socket, data );
 				});
 
 				socket.on( 'update', function( data ) {
@@ -30,7 +31,7 @@
 						editable.setHtml( writeFragment( data.content ) );
 					}
 
-					editor.plugins.caretlocator.updateClientCaret( data.clientId, editor, data.selection );
+					editor.plugins.caretlocator.updateClientCaret( data, editor );
 				});
 
 				setInterval( function() {
@@ -42,9 +43,37 @@
 						selection: editor.getSelection().createBookmarks2( true )
 					});
 				}, UPDATE_INTERVAL );
+
+				socket.on( 'name', function( data ) {
+					editor.plugins.caretlocator.updateClientCaretName( data );
+				});
 			});
 		}
 	});
+
+	function insertClientForm( socket, data ) {
+		var form = CKEDITOR.dom.element.createFromHtml( '<div class="clientForm">\
+				<label for="clientName">What\'s your name?</label>\
+				<input id="clientName" type="text" value="' + data.name + '">\
+			</div>' );
+
+		form.appendTo( CKEDITOR.document.getBody() );
+
+		var nameInput = CKEDITOR.document.getById( 'clientName' ),
+			nameInputTimeout;
+
+		function emitNewName( event ) {
+			clearTimeout( nameInputTimeout );
+			nameInputTimeout = setTimeout( function() {
+				socket.emit( 'name', {
+					clientName: event.sender.getValue()
+				});
+			}, 500 );
+		}
+
+		nameInput.on( 'change', emitNewName );
+		nameInput.on( 'keyup', emitNewName );
+	}
 
 	function parseNode( node ) {
 		switch ( node.type ) {
