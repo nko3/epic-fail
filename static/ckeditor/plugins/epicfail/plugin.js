@@ -1,7 +1,7 @@
 (function() {
 	'use strict';
 
-	var UPDATE_INTERVAL = 100;
+	var UPDATE_INTERVAL = 1000;
 
 	CKEDITOR.plugins.add( 'epicfail', {
 		init: function( editor ) {
@@ -35,8 +35,6 @@
 				});
 
 				setInterval( function() {
-					console.log( JSON.stringify( parseChildren( editable ) ) );
-					console.log( editable.getHtml() );
 					socket.emit( 'update', {
 						docId: docId,
 						content: parseChildren( editable ),
