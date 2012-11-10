@@ -40,7 +40,7 @@ exports.add = function add( socket ) {
 		var docClients = client.doc.clients;
 		docClients.splice( docClients.indexOf( clientId ), 1 );
 
-		if ( !docClients.lenth ) {
+		if ( !docClients.length ) {
 			delete _docs[ client.docId ];
 		}
 		console.log( '[EPIC] Client (' + clientId + ') disconntected from doc:' + client.docId );

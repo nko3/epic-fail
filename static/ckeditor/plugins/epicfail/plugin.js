@@ -20,7 +20,7 @@
 
 				socket.on( 'init', function( data ) {
 					if ( data.content ) {
-						editable.setHtml( writeNode( data.content ) );
+						editable.setHtml( writeFragment( data.content ) );
 					}
 					master = data.master;
 				});
