@@ -9,8 +9,12 @@
 					socket = io.connect();
 
 				socket.on( 'connect', function() {
-					socket.emit( 'start', { docId: docId, content: parseNode( editable ) } );
-				} );
+					socket.emit( 'init', { docId: docId, content: parseNode( editable ) } );
+				});
+
+				socket.on( 'init', function( data ) {
+					console.log( data );
+				});
 			});
 		}
 	} );
