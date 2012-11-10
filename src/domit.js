@@ -18,7 +18,7 @@
 		return diff;
 	};
 
-	function diffNodesArrs( diff, addr, arr, brr, ai, bi ) {
+	function diffNodesArrs( diff, addr, arr, brr, ai, bi, aLookup, bLookup ) {
 		var a = arr[ ai ],
 			b = brr[ bi ];
 
@@ -30,8 +30,8 @@
 			diff.push( {
 				ins: 1,
 				addr: addr.concat( bi ),
-				next: brr[ bi + 1 ] || null,
 				prev: brr[ bi - 1 ] || null,
+				next: brr[ bi + 1 ] || null,
 				node: b
 			});
 			// Iterate.
@@ -42,10 +42,13 @@
 			diff.push( {
 				del: 1,
 				addr: addr.concat( ai ),
-				next: arr[ ai + 1 ] || null,
 				prev: arr[ ai - 1 ] || null,
+				next: arr[ ai + 1 ] || null,
 				node: a
 			});
+			if ( aLookup ) {
+				return diffNodesArrs( diff, addr, arr, brr, ai + 1, bi - aLookup );
+			}
 			// Iterate.
 			return diffNodesArrs( diff, addr, arr, brr, ai + 1, bi );
 		}
@@ -56,10 +59,11 @@
 				diffNodesArrs( diff, addr.concat( ai ), a.children, b.children, 0, 0 );
 			}
 			// Iterate.
-			return diffNodesArrs( diff, addr, arr, brr, ai + 1, bi + 1 );
+			diffNodesArrs( diff, addr, arr, brr, ai + 1, bi + 1 );
 		}
 		else {
-
+			// Start lookup in brr for node equals to a.
+			diffNodesArrs( diff, addr, arr, brr, ai, bi + 1, 1, 0 );
 		}
 	}
 

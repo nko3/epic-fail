@@ -10,7 +10,7 @@ var dom1 = [ { type: 3, text: 'A' } ],
 	dom5 = [ { type: 1, name: 'a', attributes: {}, children: [] } ],
 	dom6 = [ { type: 1, name: 'b', attributes: {}, children: [] } ],
 	dom7 = [ { type: 1, name: 'a', attributes: { href: 'x' }, children: [] } ],
-	dom8 = [ { type: 1, name: 'a', attributes: {}, children: [ dom1 ] } ];
+	dom8 = [ { type: 1, name: 'a', attributes: {}, children: [ dom1[ 0 ] ] } ];
 
 describe( 'Domit', function() {
 	describe( 'constructor', function() {
@@ -26,7 +26,7 @@ describe( 'Domit', function() {
 		});
 	});
 
-	describe( '#diff', function() {
+	describe( '#diff()', function() {
 		it( 'returns empty for identical 1', function() {
 			assert.deepEqual( Domit.diff( dom1, dom1 ), [] );
 		});
@@ -83,7 +83,7 @@ describe( 'Domit', function() {
 					node: dom1[ 0 ]
 				},
 				{
-					del: 2,
+					del: 1,
 					addr: [ 1 ], // was at
 					prev: dom1[ 0 ],
 					next: null,
