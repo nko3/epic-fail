@@ -11,7 +11,7 @@ CKEDITOR.editorConfig = function( config ) {
 	config.toolbarGroups = [
 		{ name: 'document', groups: [ 'mode', 'document', 'doctools' ] },
 		{ name: 'clipboard', groups: [ 'clipboard', 'undo' ] },
-		{ name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi' ] },
+		{ name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align' ] },
 		'/',
 		{ name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
 		{ name: 'links' },
@@ -20,10 +20,9 @@ CKEDITOR.editorConfig = function( config ) {
 		{ name: 'styles' },
 		{ name: 'colors' },
 		{ name: 'tools' },
-		{ name: 'others' },
-		{ name: 'about' }
+		{ name: 'others' }
 	];
 
-	config.extraPlugins = 'epicfail';
+	config.extraPlugins = 'epicfail,caretlocator';
 };
 
