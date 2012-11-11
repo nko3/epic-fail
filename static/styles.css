@@ -7,16 +7,46 @@ body {
 	background: #fff;
 	padding: 60px 20px 20px;
 	font-family: 'Trebuchet MS';
+	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADkAAAA5CAYAAACMGIOFAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AsLCTQNw7N0IQAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAOzSURBVGjevZtNT+MwEIZfu1Xbw3LYlVgV8XHh//+d3Tu0iLYRbGkXSpfEe0gTnMRO7PEMuTFSMnr0Pk3ssVDFamXUbgeTf0ApBWMMqqv6m7X+9xUYj4DJROb57fpkCmWMMeZwgFouYfIPtK/2jUn13Q7IMkBrYD5vgIr0nc6grq+hAUDNZjCXl1CjsfNGpVR6vQIEgKIAHh+B45Hv+e36CRBal0lWdTtRVoVsQPtyJMqm6AkQQBOyDcqqqO/iVtdKsG7RuZFT3SFAbnUdgM4k2dQNAeRUt6VoEGSSurGAqep6EvTqmqwuFZCq7gDgYJLR6qYAUtTtUTQaMkhdLsBQdQMSDNI1WF1uwCF1IwCjkvSqKwHYl2igoqQkXYmKA7YTJQCSIGvQszPg6QlfchUF8PQMnJ9HA5IhzXYL/HkuNdJaHnIyAX6eAw8PMIeDPKTZboHV42dzaVC7R5EDi0U0qI4FVOtVU93pVA7UAqzfridQvL/zQ1YJ2q/z+vslkWjrmY2+poC5vw9ONGzFYyvat4Y8Hss3YVGwAnr76hFwdQU1m6Ul6VTUt3blUNelqK9voLqarGhbIQ51+xT19Q1Q17+fDFWUS91QRQnq6mRFOdSNUZSgrmZRNEVdiqKR6jandamKxqqbqmiguppV0Rh1ORQNVLecoFsJio7uq0TH4w60SF+ly0SLuzuDt1e5o4F2XWnAGABCz+/UFTR+/wL2e5mjAdeO/vYWuLmRPZKo6kUBPCxPv8ksA/Z7+ls0pG6fTbRGKSJ987zebH/+KLKs3OnbnxOH86S6Y0ffmDCkPr9dt6YJ3e/kKVGp0yXRIwlbUQvQveLhVDdk8MuprqXo8AKdQ92IoROLuo4Eh3chKepGzkWT1e0BHN5PUtQlACap61E0bvwRoy5xLkpWdyDBuBlPiLoJCZLUDQSMm9b1qcsIGKRugKL0uatLXQZFo9SNSJA+QbfVFUiwN1ECIPmYAFkGHP+JAzZALy6A9SYakA45mQDjUUddqcvkObDZAD++f9GBj72jX6/KkYk04GIBvB/Ic11NBazfroKgJs+hlssSMGGuq6mAjQ+0AGiVoDm8dRcekaA6WlHfGpIRtKEow1xXkxT1rV0ZQJ2KJh5JaLKivu1PAmivor6+AaBaZHRPAA1SlKiuFhvdR4BGKUpQV7MomqAuSdFIdTX76VKEukmKRqirRU6XAtRlUTRQXc2uaIC6rIoGqDvGt7N64Sv+fyHrFUxRAC8vHUVF+k6nMPM5/gNQ84UWOq9i/gAAAABJRU5ErkJggg==);
+	color: #444;
+	font-size: .9em;
+}
+
+input {
+	border: 1px solid #aaa;
+	border-radius: 2px;
+	padding: 5px 5px;
+	outline: none;
+	width: 150px;
+}
+input:focus {
+	border-color: red;
+	box-shadow: 0 0 6px red;
+}
+label {
+	font-style: italic;
+	color: #777;
+}
+
+#container {
+	width: 960px;
+	margin: 0 auto;
+}
+
+#editable {
+	float: left;
+}
+
+.box {
+	outline: none;
+	background: #fff;
+	box-shadow: 0 0 0 15px rgba(255,255,255,.5);
+	padding: 15px 30px;
 }
 
 .cke_editable {
-	width: 660px;
-	outline: none;
-}
+	width: 600px;
 
-.cke_editable,
-.clientPanel {
-	padding: 0px;
 }
 
 .synthCaret {
@@ -39,18 +69,14 @@ body {
 	padding: 0 4px;
 	color: #fff;
 	left: 0;
-	text-shadow: 0 1px 0 #333;
+	text-shadow: 0 1px 0 #555;
+	box-shadow: 0 0 3px rgba(0,0,0,.2) inset;
 }
 
 .clientPanel {
-	position: fixed;
-	left: 720px;
-	right: 0px;
-	top: 0px;
-	bottom: 0px;
-	border-left: 1px solid #ddd;
-	background: #eee;
 	padding: 20px;
+	float: right;
+	border-left: 5px solid rgba(255,0,0,.3);
 }
 .clientPanel label {
 	display: block;

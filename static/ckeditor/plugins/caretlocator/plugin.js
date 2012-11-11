@@ -129,7 +129,6 @@
 				return carets[ clientId ].element;
 			},
 			detachCaret: function( data ) {
-				console.log( 'Wanna detach... ', data );
 				if ( carets[ data.clientId ] ) {
 					console.log( 'Removing caret for ' + data.clientId );
 					carets[ data.clientId ].element.remove();
