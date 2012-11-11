@@ -113,7 +113,7 @@
 
 		return {
 			attachCaret: function( data ) {
-				console.log( 'Attaching caret for:' + data.clientId );
+				console.log( 'Attaching caret for ' + data.clientId );
 
 				( carets[ data.clientId ] ?
 					carets[ data.clientId ].element
@@ -125,7 +125,7 @@
 					clientName = data.clientName,
 					clientColor = data.clientColor;
 
-				console.log( 'Creating caret for ' + clientId + '(' + clientName + ')'  );
+				console.log( 'Creating caret for ' + clientId + ' (' + clientName + ')'  );
 
 				carets[ clientId ] = {
 					color: clientColor
@@ -174,7 +174,7 @@
 					needsUpdate = true;
 
 				if ( needsUpdate ) {
-					console.log( 'Moving caret for ' + clientId + ' to: ', position );
+					// console.log( 'Moving caret for ' + clientId + ' to: ', position );
 
 					carets[ clientId ].element.setStyles({
 						left: position.x + 'px',

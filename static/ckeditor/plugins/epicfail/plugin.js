@@ -37,8 +37,6 @@ var DEBUG = true;
 
 				socket.on( 'disconnect', function( data ) {
 					editor.plugins.caretlocator.updateClientCaret( data, editor );
-
-					console.log( 'Clients (disconnect): ', data.clients );
 					updateClientList( data.clients );
 				});
 
@@ -49,22 +47,16 @@ var DEBUG = true;
 					}
 					that.headHtml = editable.getHtml();
 					initClientPanel( that, data );
-
-					console.log( 'Clients (init): ', data.clients );
 					updateClientList( data.clients );
 				});
 
 				socket.on( 'selection', function( data ) {
 					editor.plugins.caretlocator.updateClientCaret( data, editor );
-
-					console.log( 'Clients (selection): ', data.clients );
 					updateClientList( data.clients );
 				});
 
 				socket.on( 'name', function( data ) {
 					editor.plugins.caretlocator.updateClientCaretName( data );
-
-					console.log( 'Clients (name): ', data.clients );
 					updateClientList( data.clients );
 				});
 
