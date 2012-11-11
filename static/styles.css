@@ -5,7 +5,7 @@ html, body {
 
 body {
 	background: #fff;
-	padding: 20px;
+	padding: 60px 20px 20px;
 	font-family: 'Trebuchet MS';
 }
 
@@ -16,7 +16,7 @@ body {
 
 .cke_editable,
 .clientForm {
-	padding: 20px;
+	padding: 0px;
 }
 
 .synthCaret {
@@ -47,8 +47,9 @@ body {
 	right: 0px;
 	top: 0px;
 	bottom: 0px;
-	border-left: 1px dashed #ccc;
+	border-left: 1px solid #ddd;
 	background: #eee;
+	padding: 20px;
 }
 .clientForm label {
 	display: block;
