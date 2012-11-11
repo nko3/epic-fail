@@ -1,6 +1,6 @@
 {
 	"name": "nko3-epic-fail",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "Epic Fail",
 	"main": "server.js",
 	"scripts": {
