@@ -32,12 +32,10 @@ exports.add = function add( socket ) {
 				domit: new Domit( data.content )
 			};
 
-			socket.emit( 'init', { name: client.name, master: true } );
-			client.master = true;
+			socket.emit( 'init', { name: client.name, head: true } );
 		}
 		else {
-			socket.emit( 'init', { name: client.name, content: doc.domit.head, master: false } );
-			client.master = false;
+			socket.emit( 'init', { name: client.name, head: doc.domit.head } );
 		}
 		doc.clients.push( client );
 		client.doc = doc;
@@ -62,12 +60,16 @@ exports.add = function add( socket ) {
 		console.log( '[EPIC] Number of clients editing doc:' + client.docId + ': ' + docClients.length );
 	});
 
-	socket.on( 'update', function( data ) {
+	socket.on( 'commit', function( data ) {
 		data.clientId = clientId;
-		data.master = client.master;
+		data.clientName = client.name;
+	});
+
+	socket.on( 'selection', function( data ) {
+		data.clientId = clientId;
 		data.clientName = client.name;
 
-		socket.broadcast.to( client.docId ).emit( 'update', data );
+		socket.broadcast.to( client.docId ).emit( 'selection', data );
 	});
 
 	socket.on( 'name', function( data ) {
