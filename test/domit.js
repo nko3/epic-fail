@@ -38,6 +38,10 @@ describe( 'Domit', function() {
 			assert.deepEqual( Domit.diff( dom5, dom5 ), [] );
 		});
 
+		it( 'returns empty for identical 3', function() {
+			assert.deepEqual( Domit.diff( domFull1, domFull1 ), [] );
+		});
+
 		it( 'returns delete,insert for entirely different 1', function() {
 			assert.deepEqual( Domit.diff( dom1, dom2 ), [
 				{
@@ -278,5 +282,31 @@ describe( 'Domit', function() {
 				}
 			] );
 		});
+	});
+
+	describe( '#applyDiff()', function() {
+		function test( dom1, dom2, name ) {
+			it( 'applies: ' + name, function() {
+				var diff = Domit.diff( dom1, dom2 );
+				assert.deepEqual( dom2, Domit.applyDiff( dom1, diff ) );
+			});
+		}
+
+		test( dom1, dom2, 'dom1,dom2' );
+		test( dom1, dom3, 'dom1,dom3' );
+		test( dom1, dom4, 'dom1,dom4' );
+		test( dom1, dom5, 'dom1,dom5' );
+		test( dom2, dom1, 'dom2,dom1' );
+		test( dom2, dom3, 'dom2,dom3' );
+		test( dom2, dom4, 'dom2,dom4' );
+		test( dom3, dom1, 'dom3,dom1' );
+		test( dom3, dom4, 'dom3,dom4' );
+		test( dom3, dom5, 'dom3,dom5' );
+		test( dom5, dom6, 'dom5,dom6' );
+		test( dom5, dom7, 'dom5,dom7' );
+		test( dom5, dom8, 'dom5,dom8' );
+		test( dom7, dom5, 'dom7,dom5' );
+
+		test( domFull1, domFull2, 'domFull1,domFull2' );
 	});
 });

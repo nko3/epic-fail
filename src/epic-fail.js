@@ -33,10 +33,17 @@ exports.add = function add( socket ) {
 				domit: new Domit( data.head )
 			};
 
-			socket.emit( 'init', { clientColor: client.color, clientName: client.name } );
+			socket.emit( 'init', {
+				clientColor: client.color,
+				clientName: client.name
+			} );
 		}
 		else {
-			socket.emit( 'init', { clientColor: client.color, clientName: client.name, head: doc.domit.head } );
+			socket.emit( 'init', {
+				clientColor: client.color,
+				clientName: client.name,
+				head: doc.domit.head
+			} );
 		}
 		doc.clients.push( client );
 		client.doc = doc;

@@ -1,3 +1,5 @@
+var DEBUG = true;
+
 (function() {
 	'use strict';
 
@@ -55,16 +57,18 @@
 					editor.plugins.caretlocator.updateClientCaretName( data );
 				});
 
-				socket.on( 'accepted', function() {
-
+				socket.on( 'accepted', function( data ) {
+					DEBUG && console.log( 'Commit ' + data.stamp + ' has been accepted by the server.' );
 				});
 
 				socket.on( 'rejected', function( data ) {
 					resetHead( that, data );
+
+					DEBUG && console.log( 'Commit ' + data.stamp + ' has been rejceted by the server.' );
 				});
 
 				socket.on( 'push', function() {
-
+					DEBUG && console.log( 'New data has been pushed by the server.' );
 				});
 
 				setInterval( function() {
@@ -132,8 +136,10 @@
 		that.pendingStamp = null;
 		that.pending = null;
 
-		var diff = CKEDITOR.domit.diff( getCurrent( that ), data.head );
-		CKEDITOR.domit.applyToDom( that.editable, diff );
+		var current = getCurrent( that ),
+			diff = CKEDITOR.domit.diff( current, data.head );
+		if ( CKEDITOR.domit.applicable( current, diff ) )
+			CKEDITOR.domit.applyToDom( that.editable, diff );
 
 		that.head = data.head;
 		that.headHtml = that.editable.getHtml();
