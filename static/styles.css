@@ -39,6 +39,7 @@ body {
 	padding: 0 4px;
 	color: #fff;
 	left: 0;
+	text-shadow: 0 1px 0 #333;
 }
 
 .clientPanel {
