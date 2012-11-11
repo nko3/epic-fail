@@ -95,7 +95,7 @@
 			container = container.children;
 
 		// Get new node's index.
-		var i = change.addr.slice( -1 );
+		var i = change.addr.slice( -1 )[ 0 ];
 
 		// Incorrect index.
 		if ( i > container.length )
@@ -113,10 +113,10 @@
 			return false;
 
 		// Get new node's index.
-		var i = change.addr.slice( -1 );
+		var i = change.addr.slice( -1 )[ 0 ];
 
 		// Incorrect index.
-		if ( i > container.length )
+		if ( i > container.getChildCount() )
 			return false;
 
 		var node = elementFromPseudom( change.node );
@@ -125,6 +125,7 @@
 			container.getChild( i ).append( node, true );
 		}
 		else {
+			console.log( 'do chuja: ', i, container.getChildCount() );
 			node.insertAfter( container.getChild( i - 1 ) );
 		}
 
@@ -141,7 +142,7 @@
 			container = container.children;
 
 		// Get index of node that will be removed.
-		var i = change.addr.slice( -1 ),
+		var i = change.addr.slice( -1 )[ 0 ],
 			node = container[ i ];
 
 		if ( !node || !compareNodes( node, change.node ) )
@@ -160,7 +161,7 @@
 			return false;
 
 		// Get index of node that will be removed.
-		var i = change.addr.slice( -1 );
+		var i = change.addr.slice( -1 )[ 0 ];
 
 		// Defer to delete in reverse order (indexes).
 		toDel.push( { container: container, index: i } );
