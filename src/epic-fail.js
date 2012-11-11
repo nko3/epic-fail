@@ -63,8 +63,17 @@ exports.add = function add( socket ) {
 	});
 
 	socket.on( 'commit', function( data ) {
-		data.clientId = clientId;
-		data.clientName = client.name;
+		var success = client.doc.domit.apply( data.diff );
+
+		if ( success ) {
+			socket.broadcast.to( client.docId ).emit( 'push', {
+				diff: diff
+			});
+			socket.emit( 'accepted', { stamp: data.stamp } );
+		}
+		else {
+			socket.emit( 'rejected', { stamp: data.stamp, head: client.doc.domit.head } );
+		}
 	});
 
 	socket.on( 'selection', function( data ) {

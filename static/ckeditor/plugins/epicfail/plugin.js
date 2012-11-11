@@ -14,7 +14,9 @@
 					head: null,
 					headHtml: null,
 					docId: window.location.search.slice( 1 ),
-					socket: null
+					socket: null,
+					pending: null,
+					pendingStamp: null
 				};
 
 			editor.on( 'contentDom', function() {
@@ -25,23 +27,40 @@
 				that.editable = editable;
 
 				socket.on( 'connect', function() {
+					that.head = getCurrent( that );
 					socket.emit( 'init', {
 						docId: that.docId,
-						head: pseudom.parseChildren( editable )
+						head: that.head
 					});
 				});
 
 				socket.on( 'init', function( data ) {
-					if ( data.content ) {
-						editable.setHtml( pseudom.writeFragment( data.content ) );
+					if ( data.head ) {
+						editable.setHtml( pseudom.writeFragment( data.head ) );
+						that.head = data.head;
 					}
-					that.head = data.head;
 					that.headHtml = editable.getHtml();
 					insertClientPanel( that, data );
 				});
 
 				socket.on( 'selection', function( data ) {
 					editor.plugins.caretlocator.updateClientCaret( data, editor );
+				});
+
+				socket.on( 'name', function( data ) {
+					editor.plugins.caretlocator.updateClientCaretName( data );
+				});
+
+				socket.on( 'accepted', function() {
+
+				});
+
+				socket.on( 'rejected', function( data ) {
+					resetHead( that, data );
+				});
+
+				socket.on( 'push', function() {
+
 				});
 
 				setInterval( function() {
@@ -55,9 +74,6 @@
 						socket.emit( 'selection', { selection: editor.getSelection().createBookmarks2( true ) } );
 				}, SELECTION_INTERVAL );
 
-				socket.on( 'name', function( data ) {
-					editor.plugins.caretlocator.updateClientCaretName( data );
-				});
 			});
 		}
 	});
@@ -89,7 +105,7 @@
 			return;
 
 		var stamp = +new Date(),
-			pending = that.pseudom.parseChildren( editable );
+			pending = getCurrent( that );
 
 		that.pending = pending;
 		that.pendingStamp = stamp;
@@ -101,6 +117,26 @@
 			// Send new selection, because usually it's changed with content.
 			selection: that.editor.getSelection().createBookmarks2( true )
 		});
+	}
+
+	function resetHead( that, data ) {
+		// Only the latest patch counts.
+		if ( data.stamp != that.pendingStamp ) {
+			return;
+		}
+
+		that.pendingStamp = null;
+		that.pending = null;
+
+		var diff = CKEDITOR.domit.diff( getCurrent( that ), data.head );
+		CKEDITOR.domit.applyToDom( that.editable, diff );
+
+		that.head = data.head;
+		that.headHtml = that.editable.getHtml();
+	}
+
+	function getCurrent( that ) {
+		return that.pseudom.parseChildren( that.editable );
 	}
 
 })();

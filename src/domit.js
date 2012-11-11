@@ -10,6 +10,10 @@
 		this.head = content;
 	}
 
+	Domit.prototype.apply = function( diff ) {
+		return false; // Be mean to others.
+	};
+
 	Domit.diff = function( old, neew ) {
 		var diff = [];
 
@@ -19,6 +23,10 @@
 		diffNodesArrs( diff, [], old, neew, 0, 0 );
 
 		return diff;
+	};
+
+	Domit.applyToDom = function( element, diff ) {
+
 	};
 
 	function diffNodesArrs( diff, addr, arr, brr, ai, bi, aLookup ) {
