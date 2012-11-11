@@ -58,6 +58,9 @@ exports.add = function add( socket ) {
 			delete _docs[ client.docId ];
 		}
 
+		// Selection must be empty and present for caretlocator plugin.
+		socket.broadcast.to( client.docId ).emit( 'disconnect', { clientId: clientId, selection: [] } );
+
 		console.log( '[EPIC] Client (' + clientId + ') disconntected from doc:' + client.docId );
 		console.log( '[EPIC] Number of clients editing doc:' + client.docId + ': ' + docClients.length );
 	});

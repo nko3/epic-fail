@@ -34,6 +34,10 @@
 					});
 				});
 
+				socket.on( 'disconnect', function( data ) {
+					editor.plugins.caretlocator.updateClientCaret( data, editor );
+				});
+
 				socket.on( 'init', function( data ) {
 					if ( data.head ) {
 						editable.setHtml( pseudom.writeFragment( data.head ) );

@@ -53,7 +53,7 @@
 			editable._.clone.setHtml( editable.getHtml() );
 
 			if( !bookmark )
-				return clientCarets.detachCaret( clientId );
+				return clientCarets.detachCaret( data );
 
 			// Move bookmark address from editable to the clone by replacing
 			// some very first digits of the address.
@@ -129,6 +129,7 @@
 				return carets[ clientId ].element;
 			},
 			detachCaret: function( data ) {
+				console.log( 'Wanna detach... ', data );
 				if ( carets[ data.clientId ] ) {
 					console.log( 'Removing caret for ' + data.clientId );
 					carets[ data.clientId ].element.remove();
