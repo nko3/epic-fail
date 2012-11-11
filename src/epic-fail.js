@@ -1,6 +1,6 @@
 'use strict';
 
-var Domit = require( './domit' );
+var Domit = require( '../static/domit' );
 
 var _clients = {},
 	_docs = {};
