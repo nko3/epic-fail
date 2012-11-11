@@ -7,7 +7,10 @@
 				var editable = editor.editable(),
 					clone = editable.clone( true );
 
-				CKEDITOR.document.getWindow().on( 'resize', updateClonePosition.bind( this, editable, clone ) );
+				CKEDITOR.document.getWindow().on( 'resize', function() {
+					updateClonePosition( editable, clone );
+					clientCarets.detachAllCarets();
+				});
 
 				updateClonePosition( editable, clone );
 				clone.setAttributes( { 'id': editable.getId() + '_clone' } );
@@ -112,7 +115,10 @@
 			attachCaret: function( data ) {
 				console.log( 'Attaching caret for:' + data.clientId );
 
-				( carets[ data.clientId ] || this.createCaret( data ) ).appendTo( CKEDITOR.document.getBody() );
+				( carets[ data.clientId ] ?
+					carets[ data.clientId ].element
+						:
+					this.createCaret( data ) ).appendTo( CKEDITOR.document.getBody() );
 			},
 			createCaret: function( data ) {
 				var clientId = data.clientId,
@@ -138,6 +144,10 @@
 					console.log( 'Removing caret for ' + data.clientId );
 					carets[ data.clientId ].element.remove();
 				}
+			},
+			detachAllCarets: function() {
+				for( var c in carets )
+					carets[ c ].element.remove();
 			},
 			moveCaret: function( data, position ) {
 				var needsUpdate = false,
