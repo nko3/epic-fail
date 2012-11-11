@@ -37,7 +37,8 @@
 	};
 
 	Domit.applicable = function( current, diff ) {
-		var change, res;
+		var change, res,
+			toDel = [];
 
 		// Clone objects.
 		current = JSON.parse( JSON.stringify( current ) );
@@ -45,15 +46,18 @@
 
 		while ( ( change = diff.shift() ) ) {
 			if ( change.ins ) {
+				deleteDeferred( toDel );
 				res = insertAt( current, change );
 			}
 			else {
-				res = deleteAt( current, change );
+				res = deleteAt( current, change, toDel );
 			}
 			if ( !res ) {
 				return false;
 			}
 		}
+
+		deleteDeferred( toDel );
 
 		return current;
 	};
@@ -81,7 +85,7 @@
 		return true;
 	}
 
-	function deleteAt( current, change ) {
+	function deleteAt( current, change, toDel ) {
 		var container = getByAddr( current, change.addr.slice( 0, -1 ) );
 
 		if ( !container || container.type == NODE_TXT )
@@ -97,9 +101,18 @@
 		if ( !node || !compareNodes( node, change.node ) )
 			return false;
 
-		container.splice( i, 1 );
+		// Defer to delete in reverse order (indexes).
+		toDel.push( { container: container, index: i } );
 
 		return true;
+	}
+
+	function deleteDeferred( toDel ) {
+		var del;
+
+		while ( ( del = toDel.pop() ) ) {
+			del.container.splice( del.index, 1 );
+		}
 	}
 
 	// ! Modifies addr !

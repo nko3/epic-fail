@@ -170,6 +170,33 @@ describe( 'Domit', function() {
 			] );
 		});
 
+
+		it( 'returns delete,insert for entirely different 7', function() {
+			assert.deepEqual( Domit.diff( dom3, dom5 ) , [
+				{
+					del: 1,
+					addr: [ 0 ], // was at
+					prev: null,
+					next: dom2[ 0 ],
+					node: dom1[ 0 ]
+				},
+				{
+					del: 1,
+					addr: [ 1 ], // was at
+					prev: dom1[ 0 ],
+					next: null,
+					node: dom2[ 0 ]
+				},
+				{
+					ins: 1,
+					addr: [ 0 ], // is at
+					prev: null,
+					next: null,
+					node: dom5[ 0 ]
+				}
+			] );
+		});
+
 		it( 'returns insert', function() {
 			assert.deepEqual( Domit.diff( dom1, dom3 ), [
 				{
