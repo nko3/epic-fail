@@ -98,6 +98,11 @@ input:focus {
 	padding-left: 15px;
 	margin-bottom: 0;
 }
+
+#lobbyClients li {
+	margin-bottom: 5px;
+}
+
 .clientColor {
 	display: inline-block;
 	width: 16px;

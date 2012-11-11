@@ -96,6 +96,9 @@ var DEBUG = true;
 		var list = CKEDITOR.document.getById( 'lobbyClients' ),
 			client;
 
+		if ( !clients )
+			return;
+
 		list.setHtml( '' );
 
 		for ( var i = clients.length ; i-- ; ) {
