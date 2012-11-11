@@ -5,17 +5,23 @@
 
 	CKEDITOR.plugins.add( 'epicfail', {
 		init: function( editor ) {
+			var pseudom = editor.plugins.pseudom,
+				that = {
+					editor: editor,
+					master: false,
+					docId: window.location.search.slice( 1 ),
+					socket: null
+				};
+
 			editor.on( 'contentDom', function() {
 				var editable = editor.editable(),
-					docId = window.location.search.slice( 1 ),
-					socket = io.connect(),
-					pseudom = editor.plugins.pseudom,
-					master,
-					lastContent;
+					socket = io.connect();
+
+				that.socket = socket;
 
 				socket.on( 'connect', function() {
 					socket.emit( 'init', {
-						docId: docId,
+						docId: that.docId,
 						content: pseudom.parseChildren( editable )
 					});
 				});
@@ -24,8 +30,8 @@
 					if ( data.content ) {
 						editable.setHtml( pseudom.writeFragment( data.content ) );
 					}
-					master = data.master;
-					insertClientForm( socket, data );
+					that.master = data.master;
+					insertClientForm( that, data );
 				});
 
 				socket.on( 'update', function( data ) {
@@ -38,7 +44,7 @@
 
 				setInterval( function() {
 					socket.emit( 'update', {
-						docId: docId,
+						docId: that.docId,
 						content: pseudom.parseChildren( editable ),
 						selection: editor.getSelection().createBookmarks2( true )
 					});
@@ -51,7 +57,7 @@
 		}
 	});
 
-	function insertClientForm( socket, data ) {
+	function insertClientForm( that, data ) {
 		var form = CKEDITOR.dom.element.createFromHtml( '<div class="clientForm">\
 				<label for="clientName">What\'s your name?</label>\
 				<input id="clientName" type="text" value="' + data.name + '">\
@@ -65,7 +71,7 @@
 		function emitNewName( event ) {
 			clearTimeout( nameInputTimeout );
 			nameInputTimeout = setTimeout( function() {
-				socket.emit( 'name', {
+				that.socket.emit( 'name', {
 					clientName: event.sender.getValue()
 				});
 			}, 500 );
