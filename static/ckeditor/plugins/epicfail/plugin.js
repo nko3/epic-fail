@@ -70,7 +70,7 @@ var DEBUG = true;
 				socket.on( 'rejected', function( data ) {
 					resetHead( that, data );
 
-					DEBUG && console.log( 'Commit ' + data.stamp + ' has been rejceted by the server.' );
+					DEBUG && console.log( 'Commit ' + data.stamp + ' has been rejected by the server.' );
 				});
 
 				socket.on( 'push', function( data ) {
@@ -210,10 +210,12 @@ var DEBUG = true;
 			commitChanges( that );
 
 			if ( CKEDITOR.domit.applyToDom( that.editable, data.diff ) ) {
+				that.head = merged;
+				that.headHtml = that.editable.getHtml();
 				// Update local pending changes after merging.
 				if ( that.pending ) {
 					that.pending = merged;
-					that.pendingHtml = that.editable.getHtml();
+					that.pendingHtml = that.headHtml;
 				}
 				return;
 			}
