@@ -78,6 +78,12 @@ var DEBUG = true;
 					DEBUG && console.log( 'New data has been pushed by the server.' );
 				});
 
+				socket.on( 'reset', function( data ) {
+					resetHard( that, data );
+
+					DEBUG && console.log( 'Had to reset --hard to master.' );
+				});
+
 				setInterval( function() {
 					commitChanges( that );
 				}, COMMIT_INTERVAL );
@@ -176,6 +182,14 @@ var DEBUG = true;
 			diff = CKEDITOR.domit.diff( current, data.head );
 		if ( CKEDITOR.domit.applyDiff( current, diff ) )
 			CKEDITOR.domit.applyToDom( that.editable, diff );
+
+		that.head = data.head;
+		that.headHtml = that.editable.getHtml();
+		resetPending( that );
+	}
+
+	function resetHard( that, data ) {
+		that.editable.setHtml( CKEDITOR.pseudom.writeFragment( data.head ) );
 
 		that.head = data.head;
 		that.headHtml = that.editable.getHtml();

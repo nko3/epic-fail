@@ -154,4 +154,8 @@ exports.add = function add( socket ) {
 
 		console.log( '[EPIC] Client (' + clientId + ') changed name to: ' + client.name );
 	});
+
+	socket.on( 'reset', function() {
+		socket.emit( 'reset', { head: client.doc.domit.head } );
+	});
 };
