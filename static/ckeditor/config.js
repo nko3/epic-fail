@@ -17,6 +17,6 @@ CKEDITOR.editorConfig = function( config ) {
 		{ name: 'others' }
 	];
 
-	config.extraPlugins = 'epicfail,caretlocator,pseudom';
+	config.extraPlugins = 'enterkey,epicfail,caretlocator,pseudom';
 };
 
