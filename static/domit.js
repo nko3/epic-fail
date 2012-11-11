@@ -122,10 +122,9 @@
 		var node = elementFromPseudom( change.node );
 
 		if ( !i ) {
-			container.getChild( i ).append( node, true );
+			container.append( node, true );
 		}
 		else {
-			console.log( 'do chuja: ', i, container.getChildCount() );
 			node.insertAfter( container.getChild( i - 1 ) );
 		}
 
@@ -225,7 +224,7 @@
 		var i = addr.shift();
 
 		if ( root.type == NODE_EL ) {
-			return getByAddr( root.getChild( i ), addr );
+			return getByAddrDom( root.getChild( i ), addr );
 		}
 		else if ( root.type == NODE_TXT ) {
 			return null; // Wrong addr.

@@ -4,7 +4,7 @@ var DEBUG = true;
 	'use strict';
 
 	var COMMIT_INTERVAL = 200,
-		SELECTION_INTERVAL = 100;
+		SELECTION_INTERVAL = 500;
 
 	CKEDITOR.plugins.add( 'epicfail', {
 		init: function( editor ) {
@@ -73,6 +73,7 @@ var DEBUG = true;
 
 				socket.on( 'push', function( data ) {
 					mergeWith( that, data );
+					editor.plugins.caretlocator.updateClientCaret( data, editor );
 
 					DEBUG && console.log( 'New data has been pushed by the server.' );
 				});

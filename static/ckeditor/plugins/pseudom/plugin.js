@@ -1,7 +1,7 @@
 (function() {
 	'use strict';
 
-	CKEDITOR.plugins.add( 'pseudom', {});
+	CKEDITOR.plugins.add( 'pseudom', {} );
 
 	CKEDITOR.pseudom = {
 		parseChildren: parseChildren,

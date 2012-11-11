@@ -120,7 +120,9 @@ exports.add = function add( socket ) {
 
 		if ( success ) {
 			socket.broadcast.to( client.docId ).emit( 'push', {
-				diff: data.diff
+				diff: data.diff,
+				selection: data.selection,
+				clientId: clientId
 			});
 			socket.emit( 'accepted', { stamp: data.stamp } );
 		}
