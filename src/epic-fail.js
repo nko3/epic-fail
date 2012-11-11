@@ -1,5 +1,7 @@
 'use strict';
 
+var Domit = require( './domit' );
+
 var _clients = {},
 	_docs = {};
 
@@ -24,12 +26,17 @@ exports.add = function add( socket ) {
 		var doc = _docs[ docId ];
 
 		if ( !doc ) {
-			_docs[ docId ] = doc = { id: docId, clients: [], content: data.content };
+			_docs[ docId ] = doc = {
+				id: docId,
+				clients: [],
+				domit: new Domit( data.content )
+			};
+
 			socket.emit( 'init', { name: client.name, master: true } );
 			client.master = true;
 		}
 		else {
-			socket.emit( 'init', { name: client.name, content: doc.content, master: false } );
+			socket.emit( 'init', { name: client.name, content: doc.domit.head, master: false } );
 			client.master = false;
 		}
 		doc.clients.push( client );
