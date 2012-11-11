@@ -7,37 +7,10 @@
 				var editable = editor.editable(),
 					clone = editable.clone( true );
 
-				// We need to prevent margin collapsing effect on the editable element to make selection highlight shadow works.
-				// http://reference.sitepoint.com/css/collapsingmargins
-				if ( !( editable.getComputedStyle( 'position' ) == 'absolute' || ( /^inline/ ).exec( editable.getComputedStyle( 'display' ) ) ) ) {
-					var sides = [ 'top', 'bottom' ];
-					for ( var i = 0, side; side = sides[ i ], i < 2; i++ ) {
-						var borderSize = parseInt( editable.getComputedStyle( 'border-' + side + '-width' ), 10 ),
-							paddingSize = parseInt( editable.getComputedStyle( 'padding-' + side ), 10 ),
-							style;
+				CKEDITOR.document.getWindow().on( 'resize', updateClonePosition.bind( this, editable, clone ) );
 
-						if ( !( borderSize || paddingSize ) ) {
-							style = 'border-' + side;
-							// Force a transparent border on it.
-							editable.setStyle( style, '1px solid transparent' );
-						}
-					}
-				}
-
-				clone.setStyles({
-					'z-index': -1,
-					position: 'absolute',
-					left: editable.$.offsetLeft + 'px',
-					top: editable.$.offsetTop + 'px',
-					width: editable.getSize( 'width', 1 ) + 'px',
-					height: editable.getSize( 'height', 1 ) + 'px',
-					color: 'red',
-					opacity: 0
-				});
-				clone.setAttributes({
-					'id': editable.getId() + '_clone'
-				});
-				clone.$.scrollTop = editable.$.scrollTop;
+				updateClonePosition( editable, clone );
+				clone.setAttributes( { 'id': editable.getId() + '_clone' } );
 				clone.appendTo( editor.document.getBody() );
 				editable._.clone = clone;
 			}, this );
@@ -98,6 +71,38 @@
 		return CKEDITOR.tools.extend(
 			caretMark.getDocumentPosition(),
 			{ height: parseInt( caretMark.getComputedStyle( 'height' ), 10 ) } );
+	}
+
+	function updateClonePosition( editable, clone ) {
+		// We need to prevent margin collapsing effect on the editable element to make selection highlight shadow works.
+		// http://reference.sitepoint.com/css/collapsingmargins
+		if ( !( editable.getComputedStyle( 'position' ) == 'absolute' || ( /^inline/ ).exec( editable.getComputedStyle( 'display' ) ) ) ) {
+			var sides = [ 'top', 'bottom' ];
+			for ( var i = 0, side; side = sides[ i ], i < 2; i++ ) {
+				var borderSize = parseInt( editable.getComputedStyle( 'border-' + side + '-width' ), 10 ),
+					paddingSize = parseInt( editable.getComputedStyle( 'padding-' + side ), 10 ),
+					style;
+
+				if ( !( borderSize || paddingSize ) ) {
+					style = 'border-' + side;
+					// Force a transparent border on it.
+					editable.setStyle( style, '1px solid transparent' );
+				}
+			}
+		}
+
+		clone.setStyles({
+			'z-index': -10,
+			position: 'absolute',
+			left: editable.$.offsetLeft + 'px',
+			top: editable.$.offsetTop + 'px',
+			width: editable.getSize( 'width', 1 ) + 'px',
+			height: editable.getSize( 'height', 1 ) + 'px',
+			color: 'red',
+			opacity: 1
+		});
+
+		clone.$.scrollTop = editable.$.scrollTop;
 	}
 
 	var clientCarets = (function() {
