@@ -17,7 +17,8 @@ var DEBUG = true;
 					socket: null,
 					pending: null,
 					pendingStamp: null,
-					pendingHtml: null
+					pendingHtml: null,
+					inited: null
 				};
 
 			editor.on( 'contentDom', function() {
@@ -45,6 +46,7 @@ var DEBUG = true;
 						editable.setHtml( CKEDITOR.pseudom.writeFragment( data.head ) );
 						that.head = data.head;
 					}
+					that.inited = true;
 					that.headHtml = editable.getHtml();
 					initClientPanel( that, data );
 					updateClientList( data.clients );
@@ -138,6 +140,9 @@ var DEBUG = true;
 	}
 
 	function commitChanges( that ) {
+		if ( !that.inited ) {
+			return;
+		}
 		var editable = that.editable,
 			html = editable.getHtml();
 
