@@ -102,7 +102,7 @@
 			width: editable.getSize( 'width', 1 ) + 'px',
 			height: editable.getSize( 'height', 1 ) + 'px',
 			color: 'red',
-			opacity: 1
+			opacity: 0
 		});
 
 		clone.$.scrollTop = editable.$.scrollTop;

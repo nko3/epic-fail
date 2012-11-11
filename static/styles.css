@@ -23,18 +23,33 @@ input:focus {
 	border-color: red;
 	box-shadow: 0 0 6px red;
 }
-label {
-	font-style: italic;
-	color: #777;
-}
 
 #container {
 	width: 960px;
 	margin: 0 auto;
+	overflow: hidden;
 }
 
-#editable {
+#container_left,
+#container_right {
+	padding: 15px;
+}
+
+#container_left {
+	width: 600px;
 	float: left;
+}
+
+#container_right {
+	width: 280px;
+	float: right;
+}
+
+#container_right .box {
+	clear: both;
+	margin-bottom: 50px;
+	border-left: 5px solid rgba(255,0,0,.3);
+	padding: 20px;
 }
 
 .box {
@@ -44,10 +59,6 @@ label {
 	padding: 15px 30px;
 }
 
-.cke_editable {
-	width: 600px;
-
-}
 
 .synthCaret {
 	z-index: 1000;
@@ -73,11 +84,23 @@ label {
 	box-shadow: 0 0 3px rgba(0,0,0,.2) inset;
 }
 
-.clientPanel {
-	padding: 20px;
-	float: right;
-	border-left: 5px solid rgba(255,0,0,.3);
-}
-.clientPanel label {
+.panelLabel {
 	display: block;
+	font-style: italic;
+	font-size: 12px;
+	font-weight: normal;
+	margin: 0;
+	color: #777;
+}
+
+#lobbyClients {
+	list-style-type: none;
+	padding-left: 10px;
+	margin-bottom: 0;
+}
+.clientColor {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	margin-right: 10px;
 }
