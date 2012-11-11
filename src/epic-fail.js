@@ -17,7 +17,8 @@ exports.add = function add( socket ) {
 		client = _clients[ clientId ] = {
 			docId: null,
 			doc: null,
-			name: 'User' + getNextId()
+			name: 'User-' + getNextId(),
+			color: '#' + ( Math.random() * 0xFFFFFF << 0 ).toString( 16 )
 		};
 
 	socket.on( 'init', function( data ) {
@@ -32,10 +33,10 @@ exports.add = function add( socket ) {
 				domit: new Domit( data.content )
 			};
 
-			socket.emit( 'init', { name: client.name, head: true } );
+			socket.emit( 'init', { clientColor: client.color, clientName: client.name, head: true } );
 		}
 		else {
-			socket.emit( 'init', { name: client.name, head: doc.domit.head } );
+			socket.emit( 'init', { clientColor: client.color, clientName: client.name, head: doc.domit.head } );
 		}
 		doc.clients.push( client );
 		client.doc = doc;
@@ -56,6 +57,7 @@ exports.add = function add( socket ) {
 		if ( !docClients.length ) {
 			delete _docs[ client.docId ];
 		}
+
 		console.log( '[EPIC] Client (' + clientId + ') disconntected from doc:' + client.docId );
 		console.log( '[EPIC] Number of clients editing doc:' + client.docId + ': ' + docClients.length );
 	});
@@ -68,6 +70,7 @@ exports.add = function add( socket ) {
 	socket.on( 'selection', function( data ) {
 		data.clientId = clientId;
 		data.clientName = client.name;
+		data.clientColor = client.color,
 
 		socket.broadcast.to( client.docId ).emit( 'selection', data );
 	});

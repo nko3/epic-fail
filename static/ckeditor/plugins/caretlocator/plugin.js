@@ -101,19 +101,20 @@
 	}
 
 	var clientCarets = (function() {
-		var colors = [ 'red', 'green', 'blue', 'magenta', 'yellow', 'orange' ],
-			carets = {};
+		var carets = {};
 
 		return {
 			attachCaret: function( data ) {
 				console.log( 'Attaching caret for:' + data.clientId );
 
-				( carets[ data.clientId ] || this.createCaret( data.clientId, data.clientName ) ).appendTo( CKEDITOR.document.getBody() );
+				( carets[ data.clientId ] || this.createCaret( data ) ).appendTo( CKEDITOR.document.getBody() );
 			},
-			createCaret: function( clientId, clientName ) {
-				console.log( 'Creating caret for ' + clientId + '(' + clientName + ')'  );
+			createCaret: function( data ) {
+				var clientId = data.clientId,
+					clientName = data.clientName,
+					clientColor = data.clientColor;
 
-				var clientColor = colors.shift();
+				console.log( 'Creating caret for ' + clientId + '(' + clientName + ')'  );
 
 				carets[ clientId ] = {
 					color: clientColor

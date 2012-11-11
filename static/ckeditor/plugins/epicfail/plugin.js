@@ -37,7 +37,7 @@
 					}
 					that.head = data.head;
 					that.headHtml = editable.getHtml();
-					insertClientForm( that, data );
+					insertClientPanel( that, data );
 				});
 
 				socket.on( 'selection', function( data ) {
@@ -62,16 +62,11 @@
 		}
 	});
 
-	function insertClientForm( that, data ) {
-		var form = CKEDITOR.dom.element.createFromHtml( '<div class="clientForm">\
-				<label for="clientName">What\'s your name?</label>\
-				<input id="clientName" type="text" value="' + data.name + '">\
-			</div>' );
-
-		form.appendTo( CKEDITOR.document.getBody() );
-
+	function insertClientPanel( that, data ) {
 		var nameInput = CKEDITOR.document.getById( 'clientName' ),
 			nameInputTimeout;
+
+		nameInput.setValue( data.clientName );
 
 		function emitNewName( event ) {
 			clearTimeout( nameInputTimeout );

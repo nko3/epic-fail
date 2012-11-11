@@ -15,7 +15,7 @@ body {
 }
 
 .cke_editable,
-.clientForm {
+.clientPanel {
 	padding: 0px;
 }
 
@@ -41,7 +41,7 @@ body {
 	left: 0;
 }
 
-.clientForm {
+.clientPanel {
 	position: fixed;
 	left: 720px;
 	right: 0px;
@@ -51,6 +51,6 @@ body {
 	background: #eee;
 	padding: 20px;
 }
-.clientForm label {
+.clientPanel label {
 	display: block;
 }
