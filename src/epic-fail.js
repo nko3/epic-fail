@@ -30,10 +30,10 @@ exports.add = function add( socket ) {
 			_docs[ docId ] = doc = {
 				id: docId,
 				clients: [],
-				domit: new Domit( data.content )
+				domit: new Domit( data.head )
 			};
 
-			socket.emit( 'init', { clientColor: client.color, clientName: client.name, head: true } );
+			socket.emit( 'init', { clientColor: client.color, clientName: client.name } );
 		}
 		else {
 			socket.emit( 'init', { clientColor: client.color, clientName: client.name, head: doc.domit.head } );

@@ -27,7 +27,7 @@
 				socket.on( 'connect', function() {
 					socket.emit( 'init', {
 						docId: that.docId,
-						content: pseudom.parseChildren( editable )
+						head: pseudom.parseChildren( editable )
 					});
 				});
 
