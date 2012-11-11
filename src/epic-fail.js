@@ -37,6 +37,20 @@ var getRandomName = (function() {
 	}
 })();
 
+var getDocumentClients = function( doc ) {
+	if ( doc.clients ) {
+		return doc.clients.map( function( client ) {
+			return {
+				clientId: client.id,
+				clientName: client.name,
+				clientColor: client.color
+			}
+		});
+	}
+	else
+		return [];
+}
+
 exports.add = function add( socket ) {
 	var clientId = socket.id,
 		client = _clients[ clientId ] = {
@@ -51,27 +65,27 @@ exports.add = function add( socket ) {
 		client.docId = docId;
 		var doc = _docs[ docId ];
 
+		var toEmit = {
+			clientColor: client.color,
+			clientName: client.name
+		};
+
 		if ( !doc ) {
 			_docs[ docId ] = doc = {
 				id: docId,
 				clients: [],
 				domit: new Domit( data.head )
 			};
+		}
+		else
+			toEmit.head = doc.domit.head;
 
-			socket.emit( 'init', {
-				clientColor: client.color,
-				clientName: client.name
-			} );
-		}
-		else {
-			socket.emit( 'init', {
-				clientColor: client.color,
-				clientName: client.name,
-				head: doc.domit.head
-			} );
-		}
+		// Order is crucial.
 		doc.clients.push( client );
 		client.doc = doc;
+		toEmit.clients = getDocumentClients( doc );
+
+		socket.emit( 'init', toEmit );
 
 		// Join doc room.
 		socket.join( docId );
@@ -91,7 +105,11 @@ exports.add = function add( socket ) {
 		}
 
 		// Selection must be empty and present for caretlocator plugin.
-		socket.broadcast.to( client.docId ).emit( 'disconnect', { clientId: clientId, selection: [] } );
+		socket.broadcast.to( client.docId ).emit( 'disconnect', {
+			clientId: clientId,
+			selection: [],
+			clients: getDocumentClients( client.doc )
+		});
 
 		console.log( '[EPIC] Client (' + clientId + ') disconntected from doc:' + client.docId );
 		console.log( '[EPIC] Number of clients editing doc:' + client.docId + ': ' + docClients.length );
@@ -114,7 +132,8 @@ exports.add = function add( socket ) {
 	socket.on( 'selection', function( data ) {
 		data.clientId = clientId;
 		data.clientName = client.name;
-		data.clientColor = client.color,
+		data.clientColor = client.color;
+		data.clients = getDocumentClients( client.doc );
 
 		socket.broadcast.to( client.docId ).emit( 'selection', data );
 	});
@@ -127,7 +146,8 @@ exports.add = function add( socket ) {
 
 		socket.broadcast.to( client.docId ).emit( 'name', {
 			clientId: clientId,
-			clientName: client.name
+			clientName: client.name,
+			clients: getDocumentClients( client.doc )
 		});
 
 		console.log( '[EPIC] Client (' + clientId + ') changed name to: ' + client.name );

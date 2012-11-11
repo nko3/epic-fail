@@ -37,6 +37,9 @@ var DEBUG = true;
 
 				socket.on( 'disconnect', function( data ) {
 					editor.plugins.caretlocator.updateClientCaret( data, editor );
+
+					console.log( 'Clients (disconnect): ', data.clients );
+					updateClientList( data.clients );
 				});
 
 				socket.on( 'init', function( data ) {
@@ -45,15 +48,24 @@ var DEBUG = true;
 						that.head = data.head;
 					}
 					that.headHtml = editable.getHtml();
-					insertClientPanel( that, data );
+					initClientPanel( that, data );
+
+					console.log( 'Clients (init): ', data.clients );
+					updateClientList( data.clients );
 				});
 
 				socket.on( 'selection', function( data ) {
 					editor.plugins.caretlocator.updateClientCaret( data, editor );
+
+					console.log( 'Clients (selection): ', data.clients );
+					updateClientList( data.clients );
 				});
 
 				socket.on( 'name', function( data ) {
 					editor.plugins.caretlocator.updateClientCaretName( data );
+
+					console.log( 'Clients (name): ', data.clients );
+					updateClientList( data.clients );
 				});
 
 				socket.on( 'accepted', function( data ) {
@@ -88,7 +100,23 @@ var DEBUG = true;
 		}
 	});
 
-	function insertClientPanel( that, data ) {
+	function updateClientList( clients ) {
+		var list = CKEDITOR.document.getById( 'lobbyClients' ),
+			client;
+
+		list.setHtml( '' );
+
+		for ( var i = clients.length ; i-- ; ) {
+			client = clients[ i ];
+			CKEDITOR.dom.element.createFromHtml(
+			        '<li id="client_' + client.clientId + '">\
+			                <span class="clientColor" style="background:'+ client.clientColor + ';">&nbsp;</span>' +
+			                client.clientName +
+			        '</li>' ).appendTo( list );
+		}
+	}
+
+	function initClientPanel( that, data ) {
 		var nameInput = CKEDITOR.document.getById( 'clientName' ),
 			nameInputTimeout;
 
