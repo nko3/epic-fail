@@ -17,8 +17,7 @@ var DEBUG = true;
 					socket: null,
 					pending: null,
 					pendingStamp: null,
-					pendingHtml: null,
-					inited: null
+					pendingHtml: null
 				};
 
 			editor.on( 'contentDom', function() {
@@ -46,10 +45,21 @@ var DEBUG = true;
 						editable.setHtml( CKEDITOR.pseudom.writeFragment( data.head ) );
 						that.head = data.head;
 					}
-					that.inited = true;
 					that.headHtml = editable.getHtml();
 					initClientPanel( that, data );
 					updateClientList( data.clients );
+
+					// Start updating server after connection was initialized.
+					setInterval( function() {
+						commitChanges( that );
+					}, COMMIT_INTERVAL );
+
+					setInterval( function() {
+						// Don't send selection when waiting for commit acceptance, becaue
+						// it may be outdated.
+						if ( !that.pending )
+							socket.emit( 'selection', { selection: editor.getSelection().createBookmarks2( true ) } );
+					}, SELECTION_INTERVAL );
 				});
 
 				socket.on( 'selection', function( data ) {
@@ -86,17 +96,6 @@ var DEBUG = true;
 					DEBUG && console.log( 'Had to reset --hard to master.' );
 				});
 
-				setInterval( function() {
-					commitChanges( that );
-				}, COMMIT_INTERVAL );
-
-				setInterval( function() {
-					// Don't send selection when waiting for commit acceptance, becaue
-					// it may be outdated.
-					if ( !that.pending )
-						socket.emit( 'selection', { selection: editor.getSelection().createBookmarks2( true ) } );
-				}, SELECTION_INTERVAL );
-
 			});
 		}
 	});
@@ -110,7 +109,7 @@ var DEBUG = true;
 
 		list.setHtml( '' );
 
-		for ( var i = clients.length ; i-- ; ) {
+		for ( var i = clients.length; i--; ) {
 			client = clients[ i ];
 			CKEDITOR.dom.element.createFromHtml(
 			        '<li id="client_' + client.clientId + '">\
@@ -140,9 +139,6 @@ var DEBUG = true;
 	}
 
 	function commitChanges( that ) {
-		if ( !that.inited ) {
-			return;
-		}
 		var editable = that.editable,
 			html = editable.getHtml();
 
