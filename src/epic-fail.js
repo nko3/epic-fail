@@ -38,7 +38,7 @@ var getRandomName = (function() {
 })();
 
 var getDocumentClients = function( doc ) {
-	if ( doc.clients ) {
+	if ( doc && doc.clients ) {
 		return doc.clients.map( function( client ) {
 			return {
 				clientId: client.id,
