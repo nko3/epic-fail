@@ -188,13 +188,13 @@ var DEBUG = true;
 
 	function mergeWith( that, data ) {
 		var current = getCurrent( that ),
-			merged = CKEDITOR.domit.applyDiff( current, that.diff );
+			merged = CKEDITOR.domit.applyDiff( current, data.diff );
 
 		if ( merged ) {
 			// Commit before pulling.
 			commitChanges( that );
 
-			if ( CKEDITOR.domit.applyToDom( that.editable, that.diff ) ) {
+			if ( CKEDITOR.domit.applyToDom( that.editable, data.diff ) ) {
 				// Update local pending changes after merging.
 				if ( that.pending ) {
 					that.pending = merged;
