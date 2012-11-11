@@ -11,7 +11,13 @@
 	}
 
 	Domit.prototype.apply = function( diff ) {
-		return false; // Be mean to others.
+		var modified = Domit.applyDiff( this.head, diff );
+
+		if ( modified ) {
+			this.head = modified;
+			return true;
+		}
+		return false;
 	};
 
 	Domit.diff = function( old, neew ) {
@@ -25,9 +31,215 @@
 		return diff;
 	};
 
-	Domit.applyToDom = function( element, diff ) {
+	Domit.applyToDom = function( root, diff ) {
+		if ( typeof CKEDITOR == 'undefined' )
+			throw new Error( 'Domit#applyToDom may be used only together with CKEDITOR.' );
 
+		var change, res,
+			toDel = [];
+
+		// Clone.
+		diff = diff.concat();
+
+		while ( ( change = diff.shift() ) ) {
+			if ( change.ins ) {
+				deleteDeferredDom( toDel );
+				res = insertAtDom( root, change );
+			}
+			else {
+				res = deleteAtDom( root, change, toDel );
+			}
+			if ( !res ) {
+				return false;
+			}
+		}
+
+		deleteDeferredDom( toDel );
+
+		return true;
+	};;
+
+	Domit.applyDiff = function( current, diff ) {
+		var change, res,
+			toDel = [];
+
+		// Clone objects.
+		current = JSON.parse( JSON.stringify( current ) );
+		diff = diff.concat();
+
+		while ( ( change = diff.shift() ) ) {
+			if ( change.ins ) {
+				deleteDeferred( toDel );
+				res = insertAt( current, change );
+			}
+			else {
+				res = deleteAt( current, change, toDel );
+			}
+			if ( !res ) {
+				return false;
+			}
+		}
+
+		deleteDeferred( toDel );
+
+		return current;
 	};
+
+	function insertAt( current, change ) {
+		var container = getByAddr( current, change.addr.slice( 0, -1 ) );
+
+		if ( !container || container.type == NODE_TXT )
+			return false;
+
+		if ( container.type == NODE_EL )
+			container = container.children;
+
+		// Get new node's index.
+		var i = change.addr.slice( -1 );
+
+		// Incorrect index.
+		if ( i > container.length )
+			return false;
+
+		container.splice( i, 0, change.node );
+
+		return true;
+	}
+
+	function insertAtDom( root, change ) {
+		var container = getByAddrDom( root, change.addr.slice( 0, -1 ) );
+
+		if ( !container || container.type == NODE_TXT )
+			return false;
+
+		// Get new node's index.
+		var i = change.addr.slice( -1 );
+
+		// Incorrect index.
+		if ( i > container.length )
+			return false;
+
+		var node = elementFromPseudom( change.node );
+
+		if ( !i ) {
+			container.getChild( i ).append( node, true );
+		}
+		else {
+			node.insertAfter( container.getChild( i - 1 ) );
+		}
+
+		return true;
+	}
+
+	function deleteAt( current, change, toDel ) {
+		var container = getByAddr( current, change.addr.slice( 0, -1 ) );
+
+		if ( !container || container.type == NODE_TXT )
+			return false;
+
+		if ( container.type == NODE_EL )
+			container = container.children;
+
+		// Get index of node that will be removed.
+		var i = change.addr.slice( -1 ),
+			node = container[ i ];
+
+		if ( !node || !compareNodes( node, change.node ) )
+			return false;
+
+		// Defer to delete in reverse order (indexes).
+		toDel.push( { container: container, index: i } );
+
+		return true;
+	}
+
+	function deleteAtDom( current, change, toDel ) {
+		var container = getByAddrDom( current, change.addr.slice( 0, -1 ) );
+
+		if ( !container || container.type == NODE_TXT )
+			return false;
+
+		// Get index of node that will be removed.
+		var i = change.addr.slice( -1 );
+
+		// Defer to delete in reverse order (indexes).
+		toDel.push( { container: container, index: i } );
+
+		return true;
+	}
+
+	function deleteDeferred( toDel ) {
+		var del;
+
+		while ( ( del = toDel.pop() ) ) {
+			del.container.splice( del.index, 1 );
+		}
+	}
+
+	function deleteDeferredDom( toDel ) {
+		var del, child;
+
+		while ( ( del = toDel.pop() ) ) {
+			child = del.container.getChild( del.index );
+			child && child.remove();
+		}
+	}
+
+	// ! Modifies addr !
+	function getByAddr( root, addr ) {
+		// This is the end.
+		if ( !addr.length ) {
+			return root;
+		}
+		// Wrong addr.
+		if ( !root ) {
+			return null;
+		}
+
+		var i = addr.shift();
+
+		if ( root.type == NODE_EL ) {
+			return getByAddr( root.children[ i ], addr );
+		}
+		else if ( root.type == NODE_TXT ) {
+			return null; // Wrong addr.
+		}
+		// Doc fragment (array).
+		else {
+			return getByAddr( root[ i ], addr );
+		}
+	}
+
+	// ! Modifies addr !
+	function getByAddrDom( root, addr ) {
+		// This is the end.
+		if ( !addr.length ) {
+			return root;
+		}
+		// Wrong addr.
+		if ( !root ) {
+			return null;
+		}
+
+		var i = addr.shift();
+
+		if ( root.type == NODE_EL ) {
+			return getByAddr( root.getChild( i ), addr );
+		}
+		else if ( root.type == NODE_TXT ) {
+			return null; // Wrong addr.
+		}
+		return null; // WAT?
+	}
+
+	function elementFromPseudom( pseudom ) {
+		if ( pseudom.type == NODE_TXT ) {
+			return new CKEDITOR.dom.text( pseudom.text );
+		}
+		else {
+			return new CKEDITOR.dom.element.createFromHtml( CKEDITOR.pseudom.writeElement( pseudom ) );
+		}
+	}
 
 	function diffNodesArrs( diff, addr, arr, brr, ai, bi, aLookup ) {
 		var a = arr[ ai ],

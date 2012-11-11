@@ -1,6 +1,6 @@
 'use strict';
 
-var Domit = require( '../src/domit.js' ),
+var Domit = require( '../static/domit.js' ),
 	assert = require( 'assert' );
 
 var dom1 = [ { type: 3, text: 'A' } ],

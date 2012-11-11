@@ -102,7 +102,7 @@ exports.add = function add( socket ) {
 
 		if ( success ) {
 			socket.broadcast.to( client.docId ).emit( 'push', {
-				diff: diff
+				diff: data.diff
 			});
 			socket.emit( 'accepted', { stamp: data.stamp } );
 		}

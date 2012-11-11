@@ -1,11 +1,15 @@
 (function() {
 	'use strict';
 
-	CKEDITOR.plugins.add( 'pseudom', {
+	CKEDITOR.plugins.add( 'pseudom', {});
+
+	CKEDITOR.pseudom = {
 		parseChildren: parseChildren,
 
-		writeFragment: writeFragment
-	});
+		writeFragment: writeFragment,
+
+		writeElement: writeElement
+	};
 
 	function parseChildren( element ) {
 		var children = element.getChildren(),

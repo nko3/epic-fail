@@ -8,11 +8,9 @@ var DEBUG = true;
 
 	CKEDITOR.plugins.add( 'epicfail', {
 		init: function( editor ) {
-			var pseudom = editor.plugins.pseudom,
-				that = {
+			var that = {
 					editor: editor,
 					editable: null,
-					pseudom: pseudom,
 					head: null,
 					headHtml: null,
 					docId: window.location.search.slice( 1 ),
@@ -42,7 +40,7 @@ var DEBUG = true;
 
 				socket.on( 'init', function( data ) {
 					if ( data.head ) {
-						editable.setHtml( pseudom.writeFragment( data.head ) );
+						editable.setHtml( CKEDITOR.pseudom.writeFragment( data.head ) );
 						that.head = data.head;
 					}
 					that.headHtml = editable.getHtml();
@@ -109,7 +107,7 @@ var DEBUG = true;
 		var editable = that.editable,
 			html = editable.getHtml();
 
-		if ( html == that.headHtml )
+		if ( html == that.headHtml || that.pending )
 			return;
 
 		var stamp = +new Date(),
@@ -118,9 +116,11 @@ var DEBUG = true;
 		that.pending = pending;
 		that.pendingStamp = stamp;
 
+		var diff = CKEDITOR.domit.diff( that.head, pending );
+
 		that.socket.emit( 'commit', {
 			docId: that.docId,
-			diff: CKEDITOR.domit.diff( that.head, pending ),
+			diff: diff,
 			stamp: stamp,
 			// Send new selection, because usually it's changed with content.
 			selection: that.editor.getSelection().createBookmarks2( true )
@@ -138,7 +138,7 @@ var DEBUG = true;
 
 		var current = getCurrent( that ),
 			diff = CKEDITOR.domit.diff( current, data.head );
-		if ( CKEDITOR.domit.applicable( current, diff ) )
+		if ( CKEDITOR.domit.applyDiff( current, diff ) )
 			CKEDITOR.domit.applyToDom( that.editable, diff );
 
 		that.head = data.head;
@@ -146,7 +146,7 @@ var DEBUG = true;
 	}
 
 	function getCurrent( that ) {
-		return that.pseudom.parseChildren( that.editable );
+		return CKEDITOR.pseudom.parseChildren( that.editable );
 	}
 
 })();
