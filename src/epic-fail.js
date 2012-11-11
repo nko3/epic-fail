@@ -12,13 +12,38 @@ var getNextId = (function() {
 	};
 })();
 
+var getRandomColor = (function() {
+	// Min is 0, max is 150 to avoid white.
+	var getRandomChannel = function() {
+		return ( '0' + ( 0 | Math.random() * 150 ).toString( 16 ) ).slice( -2 );
+	}
+
+	return function() {
+		return '#' +
+			getRandomChannel() +
+			getRandomChannel() +
+			getRandomChannel();
+	}
+})();
+
+var getRandomName = (function() {
+	var names = [ 'Chuck', 'James', 'Ray', 'Sam', 'Fats', 'Buddy', 'Jerry', 'Little', 'Elvis', 'The', 'Carl', 'Cornell', 'Billy', 'Eddie', 'Bo', 'Aretha', 'Marvin', 'Bill', 'B.B.', 'Clyde', 'Ricky', 'Roy', 'Carl', 'Smokey', 'Big', 'Muddy', 'Jackie', 'Al', 'Mike', 'Brian', 'Carl', 'The', 'George', 'John', 'Paul', 'Ringo', 'The', 'Ben', 'Rudy', 'Clyde', 'Johnny', 'Bill', 'Charlie', 'Van', 'The', 'Eric', 'Chas', 'Alan', 'John', 'John', 'Bob', 'Rod', 'Al', 'Janis', 'Neil', 'Frank', 'David' ],
+		snames = [ 'Berry', 'Brown', 'Charles', 'Cooke', 'Domino', 'Holly', 'Lewis', 'Richard', 'Presley', 'Coasters', 'Gardner', 'Gunter', 'Guy', 'Cochran', 'Diddley', 'Franklin', 'Gaye', 'Haley', 'King', 'McPhatter', 'Nelson', 'Orbison', 'Perkins', 'Robinson', 'Turner', 'Waters', 'Wilson', 'Jardine', 'Love', 'Wilson', 'Wilson', 'Beatles', 'Harrison', 'Lennon', 'McCartney', 'Starr', 'Drifters', 'King', 'Lewis', 'McPhatter', 'Moore', 'Pinkney', 'Thomas', 'Morrison', 'Animals', 'Burdon', 'Chandler', 'Price', 'Steel', 'Lennon', 'Marley', 'Stewart', 'Green', 'Joplin', 'Young', 'Zappa', 'Bowie' ];
+
+	return function() {
+		return names[ 0 | ( Math.random() * names.length - 1 ) ] +
+			' ' +
+			snames[ 0 | ( Math.random() * snames.length - 1 ) ];
+	}
+})();
+
 exports.add = function add( socket ) {
 	var clientId = socket.id,
 		client = _clients[ clientId ] = {
 			docId: null,
 			doc: null,
-			name: 'User-' + getNextId(),
-			color: '#' + ( Math.random() * 0xFFFFFF << 0 ).toString( 16 )
+			name: getRandomName(),
+			color: getRandomColor()
 		};
 
 	socket.on( 'init', function( data ) {
