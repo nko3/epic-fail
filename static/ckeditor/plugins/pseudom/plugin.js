@@ -50,10 +50,10 @@
 			attributesObj[ attributes[ i ].nodeName ] = attributes[ i ].nodeValue;
 		}
 
-		if ( !attributesObj[ '_sid' ] ) {
-			var val = randomHash( 4 );
-			attributesObj[ '_sid' ] = val;
-			element.setAttribute( '_sid', val );
+		if ( !attributesObj[ 'id' ] ) {
+			var val = 'epic-' + randomHash( 4 );
+			attributesObj[ 'id' ] = val;
+			element.setAttribute( 'id', val );
 		}
 
 		obj.children = parseChildren( element );
