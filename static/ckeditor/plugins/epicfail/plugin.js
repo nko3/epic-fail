@@ -16,7 +16,8 @@ var DEBUG = true;
 					docId: window.location.search.slice( 1 ),
 					socket: null,
 					pending: null,
-					pendingStamp: null
+					pendingStamp: null,
+					pendingHtml: null
 				};
 
 			editor.on( 'contentDom', function() {
@@ -56,6 +57,7 @@ var DEBUG = true;
 				});
 
 				socket.on( 'accepted', function( data ) {
+					accepted( that, data );
 					DEBUG && console.log( 'Commit ' + data.stamp + ' has been accepted by the server.' );
 				});
 
@@ -65,7 +67,9 @@ var DEBUG = true;
 					DEBUG && console.log( 'Commit ' + data.stamp + ' has been rejceted by the server.' );
 				});
 
-				socket.on( 'push', function() {
+				socket.on( 'push', function( data ) {
+					mergeWith( that, data );
+
 					DEBUG && console.log( 'New data has been pushed by the server.' );
 				});
 
@@ -115,6 +119,7 @@ var DEBUG = true;
 
 		that.pending = pending;
 		that.pendingStamp = stamp;
+		that.pendingHtml = html;
 
 		var diff = CKEDITOR.domit.diff( that.head, pending );
 
@@ -127,14 +132,21 @@ var DEBUG = true;
 		});
 	}
 
+	function accepted( that, data ) {
+		// Only the latest patch counts
+		if ( that.pendingStamp != data.stamp )
+			return;
+
+		that.head = that.pending; // TODO after server pushed that should be reset to what it has left.
+		that.headHtml = that.pendingHtml;
+		resetPending( that );
+	}
+
 	function resetHead( that, data ) {
 		// Only the latest patch counts.
 		if ( data.stamp != that.pendingStamp ) {
 			return;
 		}
-
-		that.pendingStamp = null;
-		that.pending = null;
 
 		var current = getCurrent( that ),
 			diff = CKEDITOR.domit.diff( current, data.head );
@@ -143,6 +155,35 @@ var DEBUG = true;
 
 		that.head = data.head;
 		that.headHtml = that.editable.getHtml();
+		resetPending( that );
+	}
+
+	function mergeWith( that, data ) {
+		var current = getCurrent( that ),
+			merged = CKEDITOR.domit.applyDiff( current, that.diff );
+
+		if ( merged ) {
+			// Commit before pulling.
+			commitChanges( that );
+
+			if ( CKEDITOR.domit.applyToDom( that.editable, that.diff ) ) {
+				// Update local pending changes after merging.
+				if ( that.pending ) {
+					that.pending = merged;
+					that.pendingHtml = that.editable.getHtml();
+				}
+				return;
+			}
+		}
+
+		// Force reset to master.
+		that.socket.emit( 'reset' );
+	}
+
+	function resetPending( that ) {
+		that.pendingStamp = null;
+		that.pending = null;
+		that.pendingHtml = null;
 	}
 
 	function getCurrent( that ) {
